@@ -11,6 +11,8 @@ library(bslib)
 library(shinythemes)
 
 #Define functions
+
+#this function is used twice, so I am defining it up here 
 calculate_4thdown_conv <- function(data, selected_teams) {
   data %>%
     filter(posteam %in% selected_teams & down == 4 & yrdline100 <=2) %>%
@@ -22,6 +24,7 @@ calculate_4thdown_conv <- function(data, selected_teams) {
     mutate(Team = posteam) %>% select(-posteam)
 }
 
+#this function is also used twice 
 calculate_twopt_conv <- function(data, selected_teams) {
   data %>% 
     mutate(TwoPointConv = ifelse(TwoPointConv == "Success", 1, 0)) %>% 
@@ -42,7 +45,7 @@ read_csv("NFL Play by Play 2009-2017 (v4).csv")
 
 ui <- fluidPage(
   theme=shinytheme("darkly"),
-  titlePanel("NFL Team Analysis"),
+  titlePanel("NFL 2-point and 4th and Short Conversion Analysis"),
   
   sidebarLayout(
     sidebarPanel(
@@ -67,6 +70,7 @@ ui <- fluidPage(
     ),
     
     #select season for contingency tables 
+    #i made a seperate input for the cables for if someone wanted to compare say the first year of the range, 2013, to the most recent year 
     checkboxGroupInput(
       inputId = "contingency_seasons",
       label = "Select Season(s) for Contingency Table:",
@@ -80,7 +84,7 @@ ui <- fluidPage(
     
     mainPanel(
       tabsetPanel(
-        tabPanel(
+        tabPanel( #ABOUT TAB 
           "About",
           h4("About This App"),
           p("This Shiny App provides insights into NFL teams' performance on two-point conversions and fourth-down plays in the 2013-2017 Seasons. Many fans have speculated that the success rates of these plays have been increasing, and thus teams should chance them more. Here, we can explore the statistics of these plays by team or between teams for these 5 seasons."),
@@ -98,7 +102,7 @@ ui <- fluidPage(
           img(src = "nfl_logo.svg", height = "300px", width = "400px")
   
         ),
-        tabPanel(
+        tabPanel( #NUMERICAL SUMMARIES AND STATISTICS TAB 
           "Statistics",
           tagList(
             h4("Summary Table: Select Numeric Variables and Teams"),
@@ -109,30 +113,30 @@ ui <- fluidPage(
           tableOutput("multiyear_table")
           )
         ),
-        tabPanel(
+        tabPanel( #TWO POINT CONVERSION RATES TAB 
           "2-Point Conversion Rates",
           tableOutput("two_pt_contingency_table"),
           plotOutput("twopoint_plot"),
           tableOutput("twopt_team_table"),
           plotOutput("twopt_team_plot")
         ),
-        tabPanel(
+        tabPanel( #4TH DOWN AND SHORT YARDAGE CONVERSION RATES TAB 
           "4th Down and Short Conversion Rates",
           tableOutput("fourth_down_contingency_table"),
           plotOutput("fourthdown_plot"),
           tableOutput("fourth_team_table"),
           plotOutput("fourth_team_plot")
         ),
-        tabPanel(
+        tabPanel( #CONVERSION COMPARISONS BETWEEN TEAMS TAB- LINE PLOT 
           "Team Comparisons",
           plotOutput("fourth_lineplot"),
           plotOutput("twopt_lineplot")
         ),
-        tabPanel("Compare Conversions Per Team",
+        tabPanel("Compare Conversions Per Team", #INTERACTIVE PLOT TO VIEW BOTH RATES TAB 
                  textOutput("dynamic_message"),
                  plotOutput("interactive_plot")
         ),
-        tabPanel("Data Download",
+        tabPanel("Data Download", #DATA DOWNLOAD TAB 
           fluidPage(
             h3("Download Filtered Data"),
             h4("Please use the season range slider to select years. Make sure to hit the 'update' button for data!"),
