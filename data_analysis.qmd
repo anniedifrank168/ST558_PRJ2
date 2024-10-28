@@ -1,0 +1,473 @@
+---
+title: "NFL_Data_Analysis"
+format: html
+editor: visual
+---
+
+## NFL Play-by-Play Data Analysis
+
+In this document we will do some exploratory data analysis of our data before creating an app.
+
+I found descriptions for the variable names [here.](https://github.com/maksimhorowitz/nflscrapR/blob/master/R/scrape_play_by_play.R)
+
+```{r setup, include=FALSE}
+#pacman to check whether packages are installed, if not load them
+if (!require("pacman")) install.packages("pacman")
+library(pacman)
+pacman::p_load(tidycensus,
+ dplyr,
+ tidyverse,
+ httr,
+ jsonlite,
+ purrr,
+ ggplot2,
+ readr,
+ psych,
+ reshape2,
+ gganimate)
+```
+
+```{r data_import}
+NFL_data<- read_csv("NFL Play by Play 2009-2017 (v4).csv") 
+head(NFL_data)
+#Imported as a tibble. Has 102 different variables 
+head(str(NFL_data))
+#psych::describe(NFL_data)
+#I am going to filter to just a 5 year span, 2012-2017, just because the dataset is so huge and taking a long time to load for a lot of things. 
+NFL_data <- NFL_data%>% filter(Season >= 2013) 
+psych::describe(NFL_data)
+#def2point is all NA in this version, but I am not interested in this variable anyway 
+NFL_data <- NFL_data %>% select(-DefTwoPoint)
+colSums(is.na(NFL_data))
+names(NFL_data)
+```
+
+### 1. What data are we working with?
+
+There are a couple things off the top of my head I'd be interested in. One is the percent of 2 point conversions, because there are a lot of times I question the decision of these and also I know 2 point attempt rates have been increasing. Another is TJ Watt's stats compared to other defensive players because I think he gets snubbed every year for DPOY.
+
+Here I am just listing out the variables that I think I will be most interested in so I can subset the data set down to it.
+
+-   sp = Binary indicatior for whether or not a score occured on the play
+
+-   yrdln = String indicating the current field position for a given play
+
+-   desc = Detailed string description for the given play play_type = String indicating the type of play: pass (includes sacks), run (includes scrambles), punt, field_goal, kickoff, extra_point, qb_kneel, qb_spike, no_play (timeouts and penalties), and missing for rows indicating end of play.
+
+-   yards.gained = Numeric yards gained (or lost) for the given play.
+
+-   yrdline100 = Numeric distance in the number of yards from the opponent's endzone for the posteam.
+
+-   hometeam = String abbreviation for the home team.
+
+-   awayteam = String abbreviation for the home team.
+
+-   posteam = String abbreviation for the team with possession.
+
+-   posteamscore = score of the team with possession
+
+-   defteamscore = score of the team on defense
+
+-   down = The down for the given play
+
+-   qtr = Quarter of the game (5 is overtime).
+
+-   ydsnet = Numeric value for total yards gained on the given drive.
+
+-   PassLength = String indicator for pass length: short or deep.
+
+-   twopointconv = String indicator for result of two point conversion attempt: success, failure, safety (touchback in defensive endzone is 1 point apparently), or return.
+
+-   timeout_indicator = Binary indicator for whether or not a timeout was called.
+
+-   timeout_team = team that called the timeout
+
+-   epa = Expected points added (EPA) by the posteam for the given play: **I am not going to mess with the EPA variables at all because it isn't clear how they were calculated.** **Same goes for wp (win probability) variables.**
+
+-   passoutcome= outcome of pass
+
+-   interceptionthrown = binary indicator for if the pass was intercepted
+
+-   fumble = binary indicator for if a fumble occured
+
+-   sack = Binary indicator for if the play ended in a sack.
+
+-   touchdown = Binary indicator for if the play resulted in a TD.
+
+-   Tackler1 = String name of one of the players with a tackle assist.
+
+-   Tackler2 = String name of one of the players with a tackle assist.
+
+I don't think there is really enough information to fairly judge TJ, but I still think he deserves DPOY.
+
+### 2. Two-Point Conversion Attempts
+
+Here lets create some basic contingency tables for the 5 seasons we are interested in and accompaning plots.
+
+```{r}
+#Creating seperate tibbles for each year and removing probabilities variables because I am not interested in them 
+
+yr2013<- NFL_data %>% filter(Season == 2013) %>% select(-contains("WPA"), -contains("WP"), -contains("EPA"), -contains("Prob"))
+
+yr2014<- NFL_data %>% filter(Season == 2014) %>% select(-contains("WPA"), -contains("WP"), -contains("EPA"), -contains("Prob"))
+
+yr2015<- NFL_data %>% filter(Season == 2015) %>% select(-contains("WPA"), -contains("WP"), -contains("EPA"), -contains("Prob"))
+
+yr2016<- NFL_data %>% filter(Season == 2016) %>% select(-contains("WPA"), -contains("WP"), -contains("EPA"), -contains("Prob"))
+
+yr2017<- NFL_data %>% filter(Season == 2017) %>% select(-contains("WPA"), -contains("WP"), -contains("EPA"), -contains("Prob"))
+
+#Individual seasons contingency tables for two point conversions 
+twopt_2013 <- table(yr2013$TwoPointConv)
+twopt_2013
+twopt_2014 <- table(yr2014$TwoPointConv)
+twopt_2014
+twopt_2015 <- table(yr2015$TwoPointConv)
+twopt_2015
+twopt_2016 <- table(yr2016$TwoPointConv)
+twopt_2016
+twopt_2017 <- table(yr2017$TwoPointConv)
+twopt_2017
+
+#Multiyear contingency table (Can't just use table function because they dont have the same counts)
+temp_2013 <- c(Failure = 38, Success = 33)
+temp_2014 <- c(Failure = 31, Success = 28)
+temp_2015 <- c(Failure = 46, Success = 43)
+temp_2016 <- c(Failure = 52, Success = 47)
+temp_2017 <- c(Failure = 44, Success = 33)
+
+  # Combine data
+multiyr_2ptdata <- rbind(temp_2013, temp_2014, temp_2015, temp_2016, temp_2017)
+
+  # Assign row and column names for better interpretation
+rownames(multiyr_2ptdata) <- c("2013", "2014", "2015", "2016", "2017")
+colnames(multiyr_2ptdata) <- c("Failure", "Success")
+
+multiyr_2ptdata
+
+#barplot of data to view any trends
+multi_2ptdata<- as.data.frame(multiyr_2ptdata)
+  #Adding column for the year 
+multi_2ptdata$year <- rownames(multiyr_2ptdata)
+  #reshaping for ggplot, i like this function from reshape2
+  multi_2pt_long<- melt(multi_2ptdata, id.vars = "year")
+  #plotting
+  ggplot(multi_2pt_long, aes(x = year, y = value, fill = variable)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Two-Point Conversion Successes and Failures by Year",
+       x = "Year",
+       y = "Count") +
+  scale_fill_manual(values = c("Failure" = "red", "Success" = "green")) +
+  theme_minimal()
+
+#Definitely seems to have a slightly positive trend in attempts! 
+  
+
+  
+```
+
+### 3. 4th Down & Short Conversion Attempts
+
+##### Here lets do basic contingency tables and plots like we did for 2 point conversion attempts. There's about a 50% chance of making it on 4th and 2, so that is what I am going to consider here for 4th and short conversions.
+
+```{r}
+fourth_2013<- yr2013 %>% filter(down == 4, yrdline100 <= 2)
+fourth_2014<- yr2014 %>% filter(down == 4, yrdline100 <= 2)
+fourth_2015<- yr2015 %>% filter(down == 4, yrdline100 <= 2)
+fourth_2016<- yr2016 %>% filter(down == 4, yrdline100 <= 2)
+fourth_2017<- yr2017 %>% filter(down == 4, yrdline100 <= 2)
+
+table(fourth_2013$Touchdown)
+table(fourth_2014$Touchdown)
+table(fourth_2015$Touchdown)
+table(fourth_2016$Touchdown)
+table(fourth_2017$Touchdown)
+
+#Multiyear contingency table (Can't just use table function because they dont have the same counts)
+four_temp_2013 <- c(Failure = 67, Success = 23)
+four_temp_2014 <- c(Failure = 52, Success = 13)
+four_temp_2015 <- c(Failure = 48, Success = 16)
+four_temp_2016 <- c(Failure = 46, Success = 19)
+four_temp_2017 <- c(Failure = 47, Success = 16)
+
+  # Combine data
+multiyr_fourthdata <- rbind(four_temp_2013, four_temp_2014, four_temp_2015, four_temp_2016, four_temp_2017)
+
+  # Assign row and column names for better interpretation
+rownames(multiyr_fourthdata) <- c("2013", "2014", "2015", "2016", "2017")
+colnames(multiyr_fourthdata) <- c("Failure", "Success")
+
+multiyr_fourthdata
+
+#barplot of data to view any trends
+multi_fourthdata<- as.data.frame(multiyr_fourthdata)
+  #Adding column for the year 
+multi_fourthdata$year <- rownames(multiyr_fourthdata)
+  #reshaping for ggplot, i like this function from reshape2
+  multi_fourth_long<- melt(multi_fourthdata, id.vars = "year")
+  #plotting
+  ggplot(multi_fourth_long, aes(x = year, y = value, fill = variable)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Fourth and Short Conversion Successes and Failures by Year",
+       x = "Year",
+       y = "Count") +
+  scale_fill_manual(values = c("Failure" = "red", "Success" = "green")) +
+  theme_minimal()
+
+  #Hey, the amount of failures has decreased at least! Just kidding, this isn't a fair measure because it looks like overall attempts have decreased from 2013-2017. 
+  
+
+```
+
+### 4. Lets see if the data differs by team. First, 2 point conversions:
+
+First we will view bar plots of the count data of success and failures, then look at conversion rates
+
+```{r}
+  #Filter the dataset for two-point conversion plays
+two_point_plays <- NFL_data %>%
+  filter(TwoPointConv %in% c("Success", "Failure"))
+
+  #create a contingency table based on team, year, and two-point conversion success
+contingency_2pt_by_team_year <- table(two_point_plays$posteam, 
+                                         two_point_plays$Season, 
+                                         two_point_plays$TwoPointConv)
+
+  #View the contingency table
+contingency_2pt_by_team_year
+
+contingency2pt_df <- as.data.frame(contingency_2pt_by_team_year)
+colnames(contingency2pt_df) <- c("Team", "Year", "TwoPointConv", "Count")
+
+#Plotting
+combined2pt_data <- contingency2pt_df %>%
+  group_by(Team, TwoPointConv) %>%
+  summarise(Count = sum(Count)) %>%
+  ungroup()
+
+ggplot(combined2pt_data, aes(x = Team, y = Count, fill = factor(TwoPointConv))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Two-Point Conversion Success by Team (2013-2017)",
+       x = "Team",
+       y = "Count of Two-Point Conversions",
+       fill = "Two-Point Conversion") +
+  scale_fill_manual(values = c("Failure" = "red", "Success" = "green"),
+                    labels = c("Failure" = "Failure", "Success" = "Success")) +
+  theme_minimal() +
+  facet_wrap(~ TwoPointConv)  # To separate failures and successes in the plot
+
+#obviously this isn't the best graph because there are so many teams, but thinking ahead to the app, I am thinking people could filter the graph on their team(s) of choice.
+
+#filter on selected team 
+selected_team = "PIT"
+  #filter the two-point conversion plays for the selected team
+two_point_plays_team <- two_point_plays %>%
+  filter(posteam == selected_team)
+  
+contingency_2pt_by_year <- table(two_point_plays_team$Season, 
+                                     two_point_plays_team$TwoPointConv)
+
+  #Convert the contingency table to a data frame
+selected_team_2pt_df <- as.data.frame(contingency_2pt_by_year)
+colnames(selected_team_2pt_df) <- c("Year", "TwoPointConv", "Count")
+
+  #Plotting
+ggplot(selected_team_2pt_df, aes(x = factor(Year), y = Count, fill = factor(TwoPointConv))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = paste("Two-Point Conversion Success for", selected_team, "(2013-2017)"),
+       x = "Year",
+       y = "Count of Two-Point Conversions",
+       fill = "Two-Point Conversion") +
+  scale_fill_manual(values = c("Failure" = "red", "Success" = "green"),
+                    labels = c("Failure" = "Failure", "Success" = "Success")) +
+  theme_minimal()
+
+#Who would've thought, highest failure rate the year Matt Canada takes over
+
+# Function to calculate conversion rates for each team by year
+calculate_twopt_conv <- function(data, selected_teams) {
+  data %>% 
+  mutate(TwoPointConv = ifelse(TwoPointConv == "Success", 1, 0)) %>% 
+    filter(posteam %in% selected_teams & !is.na(TwoPointConv)) %>% 
+    group_by(Season,posteam) %>% 
+    summarise(TotalAttempts = n(),
+              Successful = sum(TwoPointConv, na.rm = TRUE),
+              ConversionRate = Successful/TotalAttempts,
+              Type = "Two-Point Conversion") %>%
+    mutate(Team=posteam) %>% select(-posteam)
+}
+
+#testing function 
+calculate_twopt_conv(NFL_data,selected_teams = c("PIT","CLE"))
+```
+
+### 5. Now lets look at the 4th and Short conversion rates by year:
+
+First we will view bar plots of the count data of success and failures, then look at conversion rates
+
+```{r}
+# Filter the dataset for fourth down plays
+fourth_down_plays <- NFL_data %>%
+  filter(down == 4 & yrdline100 <= 2) 
+
+# Create a contingency table based on team, year, and touchdown success
+contingency_4th_by_team_year <- table(fourth_down_plays$posteam, 
+                                         fourth_down_plays$Season, 
+                                         fourth_down_plays$Touchdown)
+
+# View the contingency table
+contingency_4th_by_team_year
+
+
+contingency4th_df <- as.data.frame(contingency_4th_by_team_year)
+colnames(contingency4th_df) <- c("Team", "Year", "Touchdown", "Count")
+
+#Plotting
+combined4th_data <- contingency4th_df %>%
+  group_by(Team, Touchdown) %>%
+  summarise(Count = sum(Count)) %>%
+  ungroup()
+
+ggplot(combined4th_data, aes(x = Team, y = Count, fill = factor(Touchdown))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Fourth Down Touchdown Success by Team (2013-2017)",
+       x = "Team",
+       y = "Count of Touchdowns",
+       fill = "Touchdown") +
+  scale_fill_manual(values = c("0" = "red", "1" = "green"),
+                    labels = c("0" = "Failure", "1" = "Success")) +
+  theme_minimal() +
+  facet_wrap(~ Touchdown)  # To separate failures and successes in the plot
+
+#Again, let's do this just with one team.. 
+
+  #Filter the dataset for fourth down plays for the selected team
+fourth_down_plays_team <- fourth_down_plays %>%
+  filter(posteam == selected_team)
+
+  #Create a contingency table based on touchdown success for the team
+contingency4th_table_by_team <- table(fourth_down_plays_team$Season, fourth_down_plays_team$Touchdown)
+
+contingency4th_table_by_team
+
+  #Convert contingency table to a data frame for easier manipulation
+selected_team_4th_df <- as.data.frame(contingency4th_table_by_team)
+colnames(selected_team_4th_df) <- c("Season", "Touchdown", "Count")
+
+  #plotting
+ggplot(selected_team_4th_df, aes(x = factor(Season), y = Count, fill = factor(Touchdown))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = paste("Fourth Down Touchdown Success for", selected_team, "(2013-2017)"),
+       x = "Season",
+       y = "Count of Fourth Down Attempts",
+       fill = "Touchdown Outcome") +
+  scale_fill_manual(values = c("0" = "red", "1" = "green"),
+                    labels = c("0" = "Failure", "1" = "Success")) +
+  theme_minimal()
+
+##### Function for calculating 4th and short conversion rates for each team by year
+calculate_4thdown_conv <- function(data, selected_teams) {
+  data %>%
+    filter(posteam %in% selected_teams & down == 4 & yrdline100 <=2) %>%
+    group_by(Season, posteam) %>%
+    summarise(TotalAttempts = n(),
+              Successful = sum(Touchdown == 1, na.rm = TRUE),
+              ConversionRate = Successful / TotalAttempts,
+              Type = "Fourth Down Conversion") %>% 
+    mutate(Team = posteam) %>% select(-posteam)
+}
+
+#testing function 
+calculate_4thdown_conv(NFL_data, c("PIT","CLE"))
+
+```
+
+### 6. Line plots
+
+These allow visual team comparisons of 2 point conversion rates and fourth and short conversion rates through the 2013-2017 seasons.
+
+```{r}
+#fourth down conversion rates needed for plot 
+calculate_4thdown_conv(NFL_data, c("PIT","BAL","CLE","CIN")) -> AFCnorth
+
+ #Create the line plot
+fourth_line_plot <- ggplot(AFCnorth, aes(x = Season, y = ConversionRate, color = Team, group = Team)) +
+  geom_line(size = 1) +  # Line for each team
+  geom_point(size = 3) +  # Points at each season
+  labs(title = "Fourth Down Conversion Rates by Team",
+       x = "Season",
+       y = "Conversion Rate",
+       color = "Team") +
+  theme_minimal()
+
+# Display the plot
+print(fourth_line_plot)
+
+########## 2 point conversion rates 
+calculate_twopt_conv(NFL_data, c("KC","JAX")) ->KCvJAX
+
+  #Create the line plot
+line_plot_2pt <- ggplot(KCvJAX, aes(x = Season, y = ConversionRate, color = Team, group = Team)) +
+  geom_line(size = 1) +  # Line for each team
+  geom_point(size = 3) +  # Points at each season
+  labs(title = "Two-Point Conversion Rates by Team",
+       x = "Season",
+       y = "Conversion Rate",
+       color = "Team") +
+  theme_minimal()
+
+# Display the plot
+print(line_plot_2pt)
+
+```
+
+### 7. For a single team, visualize both 2 point conversion and fourth and inches conversion rates
+
+```{r}
+#Going to use the AFC North Teams again 
+# Get conversion rates for two-point and fourth down for multiple teams
+AFCN_two_point_data <- calculate_twopt_conv(NFL_data, c("PIT","BAL","CLE","CIN"))
+AFCN_fourth_down_data <- calculate_4thdown_conv(NFL_data, c("PIT","BAL","CLE","CIN"))
+
+#Combining datasets 
+AFCN_all <- bind_rows(AFCN_fourth_down_data,AFCN_two_point_data)
+
+#Plotting
+ggplot(AFCN_all, aes(x=Season, y=ConversionRate, color= Team, linetype = Type, group = interaction(Team, Type))) +
+  geom_smooth(se=FALSE, size = 1.2) + #smoothed lines
+  geom_text(data = AFCN_all %>% group_by(Team,Type) %>% slice_max(Season),
+            aes(label=Team), hjust=1.2,size = 4) + #add team labels at the end of each line 
+  labs(title= "Two-point and Fourth Down Conversion Rates",
+       x = "Season",
+       y = "Conversion Rate",
+       color = "Team",
+       linetype = "Conversion Type") + 
+  scale_x_continuous(breaks = 2013:2017) + #setting axis for the 2013-2017 seasons 
+  theme_minimal()
+  
+
+```
+
+#### Numerical Summaries for Quantitative Variables at a Given Team(s)
+
+```{r}
+
+#Function to summarize numeric variables for specific team(s) 
+calculate_team_summary<- function(data, selected_teams, quantitative_vars) {
+  data %>% 
+    filter(posteam %in% selected_teams) %>% #filter for selected team(s)
+    group_by(posteam) %>% #group by team
+    summarise(across(
+      all_of(quantitative_vars), #i am thinking in app i will give options for user
+      list(mean = ~mean(.x, na.rm = TRUE), sd = ~sd(.x, na.rm = TRUE), median = ~median(.x, na.rm= TRUE))
+    )) %>% 
+    ungroup()
+}
+
+#Example usage 
+calculate_team_summary(data = NFL_data, selected_teams = c("PIT","CLE"), quantitative_vars = c("yrdline100", "FieldGoalDistance"))
+
+
+
+
+```
