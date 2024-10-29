@@ -100,6 +100,8 @@ Here I am just listing out the variables that I think I will be most interested 
 
 I don't think there is really enough information to fairly judge TJ, but I still think he deserves DPOY.
 
+I am just going to focus on two-point conversion attempts and 4th and short (less than or equal to two yards) conversions for touchdowns.
+
 ### 2. Two-Point Conversion Attempts
 
 Here lets create some basic contingency tables for the 5 seasons we are interested in and accompaning plots.
