@@ -28,18 +28,18 @@ pacman::p_load(tidycensus,
 ```
 
 ```{r data_import}
-NFL_data<- read_csv("NFL Play by Play 2009-2017 (v4).csv") 
+NFL_data<- read_csv("NFL_Play_by_Play_2009-2017(v4).csv") 
 head(NFL_data)
 #Imported as a tibble. Has 102 different variables 
-head(str(NFL_data))
+str(NFL_data)
 #psych::describe(NFL_data)
 #I am going to filter to just a 5 year span, 2012-2017, just because the dataset is so huge and taking a long time to load for a lot of things. 
 NFL_data <- NFL_data%>% filter(Season >= 2013) 
 psych::describe(NFL_data)
 #def2point is all NA in this version, but I am not interested in this variable anyway 
 NFL_data <- NFL_data %>% select(-DefTwoPoint)
-colSums(is.na(NFL_data))
-names(NFL_data)
+#colSums(is.na(NFL_data)) #I actually looked at these but I commited out them so my qmd output isn't crazy
+#names(NFL_data)
 ```
 
 ### 1. What data are we working with?

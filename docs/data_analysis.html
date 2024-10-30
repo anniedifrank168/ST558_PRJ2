@@ -1,0 +1,1973 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>NFL_Data_Analysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">NFL_Data_Analysis</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="nfl-play-by-play-data-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="nfl-play-by-play-data-analysis">NFL Play-by-Play Data Analysis</h2>
+<p>In this document we will do some exploratory data analysis of our data before creating an app.</p>
+<p>I found descriptions for the variable names <a href="https://github.com/maksimhorowitz/nflscrapR/blob/master/R/scrape_play_by_play.R">here.</a></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>NFL_data<span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"NFL_Play_by_Play_2009-2017(v4).csv"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: One or more parsing issues, call `problems()` on your data frame for details,
+e.g.:
+  dat &lt;- vroom(...)
+  problems(dat)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 407688 Columns: 102
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr  (34): SideofField, posteam, DefensiveTeam, desc, ExPointResult, TwoPoin...
+dbl  (64): GameID, Drive, qtr, down, TimeUnder, TimeSecs, PlayTimeDiff, yrdl...
+lgl   (2): DefTwoPoint, BlockingPlayer
+date  (1): Date
+time  (1): time
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(NFL_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 102
+  Date           GameID Drive   qtr  down time   TimeUnder TimeSecs PlayTimeDiff
+  &lt;date&gt;          &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;time&gt;     &lt;dbl&gt;    &lt;dbl&gt;        &lt;dbl&gt;
+1 2009-09-10 2009091000     1     1    NA 15:00         15     3600            0
+2 2009-09-10 2009091000     1     1     1 14:53         15     3593            7
+3 2009-09-10 2009091000     1     1     2 14:16         15     3556           37
+4 2009-09-10 2009091000     1     1     3 13:35         14     3515           41
+5 2009-09-10 2009091000     1     1     4 13:27         14     3507            8
+6 2009-09-10 2009091000     2     1     1 13:16         14     3496           11
+# ℹ 93 more variables: SideofField &lt;chr&gt;, yrdln &lt;dbl&gt;, yrdline100 &lt;dbl&gt;,
+#   ydstogo &lt;dbl&gt;, ydsnet &lt;dbl&gt;, GoalToGo &lt;dbl&gt;, FirstDown &lt;dbl&gt;,
+#   posteam &lt;chr&gt;, DefensiveTeam &lt;chr&gt;, desc &lt;chr&gt;, PlayAttempted &lt;dbl&gt;,
+#   Yards.Gained &lt;dbl&gt;, sp &lt;dbl&gt;, Touchdown &lt;dbl&gt;, ExPointResult &lt;chr&gt;,
+#   TwoPointConv &lt;chr&gt;, DefTwoPoint &lt;lgl&gt;, Safety &lt;dbl&gt;, Onsidekick &lt;dbl&gt;,
+#   PuntResult &lt;chr&gt;, PlayType &lt;chr&gt;, Passer &lt;chr&gt;, Passer_ID &lt;chr&gt;,
+#   PassAttempt &lt;dbl&gt;, PassOutcome &lt;chr&gt;, PassLength &lt;chr&gt;, AirYards &lt;dbl&gt;, …</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Imported as a tibble. Has 102 different variables </span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">str</span>(NFL_data))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>spc_tbl_ [407,688 × 102] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+ $ Date                       : Date[1:407688], format: "2009-09-10" "2009-09-10" ...
+ $ GameID                     : num [1:407688] 2.01e+09 2.01e+09 2.01e+09 2.01e+09 2.01e+09 ...
+ $ Drive                      : num [1:407688] 1 1 1 1 1 2 2 2 2 3 ...
+ $ qtr                        : num [1:407688] 1 1 1 1 1 1 1 1 1 1 ...
+ $ down                       : num [1:407688] NA 1 2 3 4 1 2 3 4 1 ...
+ $ time                       : 'hms' num [1:407688] 15:00:00 14:53:00 14:16:00 13:35:00 ...
+  ..- attr(*, "units")= chr "secs"
+ $ TimeUnder                  : num [1:407688] 15 15 15 14 14 14 13 13 12 12 ...
+ $ TimeSecs                   : num [1:407688] 3600 3593 3556 3515 3507 ...
+ $ PlayTimeDiff               : num [1:407688] 0 7 37 41 8 11 36 29 37 10 ...
+ $ SideofField                : chr [1:407688] "TEN" "PIT" "PIT" "PIT" ...
+ $ yrdln                      : num [1:407688] 30 42 47 44 44 2 2 6 4 43 ...
+ $ yrdline100                 : num [1:407688] 30 58 53 56 56 98 98 94 96 43 ...
+ $ ydstogo                    : num [1:407688] 0 10 5 8 8 10 10 6 8 10 ...
+ $ ydsnet                     : num [1:407688] 0 5 2 2 2 0 4 2 2 3 ...
+ $ GoalToGo                   : num [1:407688] 0 0 0 0 0 0 0 0 0 0 ...
+ $ FirstDown                  : num [1:407688] NA 0 0 0 1 0 0 0 1 0 ...
+ $ posteam                    : chr [1:407688] "PIT" "PIT" "PIT" "PIT" ...
+ $ DefensiveTeam              : chr [1:407688] "TEN" "TEN" "TEN" "TEN" ...
+ $ desc                       : chr [1:407688] "R.Bironas kicks 67 yards from TEN 30 to PIT 3. S.Logan to PIT 42 for 39 yards (M.Griffin)." "(14:53) B.Roethlisberger pass short left to H.Ward to PIT 47 for 5 yards (C.Hope)." "(14:16) W.Parker right end to PIT 44 for -3 yards (S.Tulloch)." "(13:35) (Shotgun) B.Roethlisberger pass incomplete deep right to M.Wallace. COVERAGE BY #24 HOPE" ...
+ $ PlayAttempted              : num [1:407688] 1 1 1 1 1 1 1 1 1 1 ...
+ $ Yards.Gained               : num [1:407688] 39 5 -3 0 0 0 4 -2 11 3 ...
+ $ sp                         : num [1:407688] 0 0 0 0 0 0 0 0 0 0 ...
+ $ Touchdown                  : num [1:407688] 0 0 0 0 0 0 0 0 0 0 ...
+ $ ExPointResult              : chr [1:407688] NA NA NA NA ...
+ $ TwoPointConv               : chr [1:407688] NA NA NA NA ...
+ $ DefTwoPoint                : logi [1:407688] NA NA NA NA NA NA ...
+ $ Safety                     : num [1:407688] 0 0 0 0 0 0 0 0 0 0 ...
+ $ Onsidekick                 : num [1:407688] 0 0 0 0 0 0 0 0 0 0 ...
+ $ PuntResult                 : chr [1:407688] NA NA NA NA ...
+ $ PlayType                   : chr [1:407688] "Kickoff" "Pass" "Run" "Pass" ...
+ $ Passer                     : chr [1:407688] NA "B.Roethlisberger" NA "B.Roethlisberger" ...
+ $ Passer_ID                  : chr [1:407688] "None" "00-0022924" "None" "00-0022924" ...
+ $ PassAttempt                : num [1:407688] 0 1 0 1 0 0 1 0 0 1 ...
+ $ PassOutcome                : chr [1:407688] NA "Complete" NA "Incomplete Pass" ...
+ $ PassLength                 : chr [1:407688] NA "Short" NA "Deep" ...
+ $ AirYards                   : num [1:407688] 0 -3 0 34 0 0 3 0 0 -2 ...
+ $ YardsAfterCatch            : num [1:407688] 0 8 0 0 0 0 1 0 0 5 ...
+ $ QBHit                      : num [1:407688] 0 0 0 0 0 0 0 0 0 0 ...
+ $ PassLocation               : chr [1:407688] NA "left" NA "right" ...
+ $ InterceptionThrown         : num [1:407688] 0 0 0 0 0 0 0 0 0 0 ...
+ $ Interceptor                : chr [1:407688] NA NA NA NA ...
+ $ Rusher                     : chr [1:407688] NA NA "W.Parker" NA ...
+ $ Rusher_ID                  : chr [1:407688] "None" "None" "00-0022250" "None" ...
+ $ RushAttempt                : num [1:407688] 0 0 1 0 0 1 0 1 0 0 ...
+ $ RunLocation                : chr [1:407688] NA NA "right" NA ...
+ $ RunGap                     : chr [1:407688] NA NA "end" NA ...
+ $ Receiver                   : chr [1:407688] NA "H.Ward" NA "M.Wallace" ...
+ $ Receiver_ID                : chr [1:407688] "None" "00-0017162" "None" "00-0026901" ...
+ $ Reception                  : num [1:407688] 0 1 0 0 0 0 1 0 0 1 ...
+ $ ReturnResult               : chr [1:407688] NA NA NA NA ...
+ $ Returner                   : chr [1:407688] "S.Logan" NA NA NA ...
+ $ BlockingPlayer             : logi [1:407688] NA NA NA NA NA NA ...
+ $ Tackler1                   : chr [1:407688] "M.Griffin" "C.Hope" "S.Tulloch" NA ...
+ $ Tackler2                   : chr [1:407688] NA NA NA NA ...
+ $ FieldGoalResult            : chr [1:407688] NA NA NA NA ...
+ $ FieldGoalDistance          : num [1:407688] NA NA NA NA NA NA NA NA NA NA ...
+ $ Fumble                     : num [1:407688] 0 0 0 0 0 0 0 0 0 0 ...
+ $ RecFumbTeam                : chr [1:407688] NA NA NA NA ...
+ $ RecFumbPlayer              : chr [1:407688] NA NA NA NA ...
+ $ Sack                       : num [1:407688] 0 0 0 0 0 0 0 0 0 0 ...
+ $ Challenge.Replay           : num [1:407688] 0 0 0 0 0 0 0 0 0 0 ...
+ $ ChalReplayResult           : chr [1:407688] NA NA NA NA ...
+ $ Accepted.Penalty           : num [1:407688] 0 0 0 0 0 0 0 0 0 0 ...
+ $ PenalizedTeam              : chr [1:407688] NA NA NA NA ...
+ $ PenaltyType                : chr [1:407688] NA NA NA NA ...
+ $ PenalizedPlayer            : chr [1:407688] NA NA NA NA ...
+ $ Penalty.Yards              : num [1:407688] 0 0 0 0 0 0 0 0 0 0 ...
+ $ PosTeamScore               : num [1:407688] 0 0 0 0 0 0 0 0 0 0 ...
+ $ DefTeamScore               : num [1:407688] 0 0 0 0 0 0 0 0 0 0 ...
+ $ ScoreDiff                  : num [1:407688] 0 0 0 0 0 0 0 0 0 0 ...
+ $ AbsScoreDiff               : num [1:407688] 0 0 0 0 0 0 0 0 0 0 ...
+ $ HomeTeam                   : chr [1:407688] "PIT" "PIT" "PIT" "PIT" ...
+ $ AwayTeam                   : chr [1:407688] "TEN" "TEN" "TEN" "TEN" ...
+ $ Timeout_Indicator          : num [1:407688] 0 0 0 0 0 0 0 0 0 0 ...
+ $ Timeout_Team               : chr [1:407688] "None" "None" "None" "None" ...
+ $ posteam_timeouts_pre       : num [1:407688] 3 3 3 3 3 3 3 3 3 3 ...
+ $ HomeTimeouts_Remaining_Pre : num [1:407688] 3 3 3 3 3 3 3 3 3 3 ...
+ $ AwayTimeouts_Remaining_Pre : num [1:407688] 3 3 3 3 3 3 3 3 3 3 ...
+ $ HomeTimeouts_Remaining_Post: num [1:407688] 3 3 3 3 3 3 3 3 3 3 ...
+ $ AwayTimeouts_Remaining_Post: num [1:407688] 3 3 3 3 3 3 3 3 3 3 ...
+ $ No_Score_Prob              : num [1:407688] 0.001506 0.000969 0.001057 0.001434 0.001861 ...
+ $ Opp_Field_Goal_Prob        : num [1:407688] 0.18 0.109 0.105 0.149 0.213 ...
+ $ Opp_Safety_Prob            : num [1:407688] 0.006639 0.001061 0.000981 0.001944 0.003279 ...
+ $ Opp_Touchdown_Prob         : num [1:407688] 0.281 0.169 0.163 0.235 0.322 ...
+ $ Field_Goal_Prob            : num [1:407688] 0.214 0.294 0.305 0.289 0.245 ...
+ $ Safety_Prob                : num [1:407688] 0.00359 0.00364 0.00383 0.00478 0.0064 ...
+ $ Touchdown_Prob             : num [1:407688] 0.314 0.423 0.421 0.319 0.208 ...
+ $ ExPoint_Prob               : num [1:407688] 0 0 0 0 0 0 0 0 0 0 ...
+ $ TwoPoint_Prob              : num [1:407688] 0 0 0 0 0 0 0 0 0 0 ...
+ $ ExpPts                     : num [1:407688] 0.324 2.338 2.416 1.013 -0.699 ...
+ $ EPA                        : num [1:407688] 2.0145 0.0779 -1.4028 -1.7126 2.0978 ...
+ $ airEPA                     : num [1:407688] NA -1.07 NA 3.32 NA ...
+ $ yacEPA                     : num [1:407688] NA 1.15 NA -5.03 NA ...
+ $ Home_WP_pre                : num [1:407688] 0.486 0.546 0.551 0.511 0.461 ...
+ $ Away_WP_pre                : num [1:407688] 0.514 0.454 0.449 0.489 0.539 ...
+ $ Home_WP_post               : num [1:407688] 0.546 0.551 0.511 0.461 0.559 ...
+ $ Away_WP_post               : num [1:407688] 0.454 0.449 0.489 0.539 0.441 ...
+ $ Win_Prob                   : num [1:407688] 0.486 0.546 0.551 0.511 0.461 ...
+ $ WPA                        : num [1:407688] 0.06076 0.00465 -0.04029 -0.04958 0.09771 ...
+  [list output truncated]
+ - attr(*, "spec")=
+  .. cols(
+  ..   Date = col_date(format = ""),
+  ..   GameID = col_double(),
+  ..   Drive = col_double(),
+  ..   qtr = col_double(),
+  ..   down = col_double(),
+  ..   time = col_time(format = ""),
+  ..   TimeUnder = col_double(),
+  ..   TimeSecs = col_double(),
+  ..   PlayTimeDiff = col_double(),
+  ..   SideofField = col_character(),
+  ..   yrdln = col_double(),
+  ..   yrdline100 = col_double(),
+  ..   ydstogo = col_double(),
+  ..   ydsnet = col_double(),
+  ..   GoalToGo = col_double(),
+  ..   FirstDown = col_double(),
+  ..   posteam = col_character(),
+  ..   DefensiveTeam = col_character(),
+  ..   desc = col_character(),
+  ..   PlayAttempted = col_double(),
+  ..   Yards.Gained = col_double(),
+  ..   sp = col_double(),
+  ..   Touchdown = col_double(),
+  ..   ExPointResult = col_character(),
+  ..   TwoPointConv = col_character(),
+  ..   DefTwoPoint = col_logical(),
+  ..   Safety = col_double(),
+  ..   Onsidekick = col_double(),
+  ..   PuntResult = col_character(),
+  ..   PlayType = col_character(),
+  ..   Passer = col_character(),
+  ..   Passer_ID = col_character(),
+  ..   PassAttempt = col_double(),
+  ..   PassOutcome = col_character(),
+  ..   PassLength = col_character(),
+  ..   AirYards = col_double(),
+  ..   YardsAfterCatch = col_double(),
+  ..   QBHit = col_double(),
+  ..   PassLocation = col_character(),
+  ..   InterceptionThrown = col_double(),
+  ..   Interceptor = col_character(),
+  ..   Rusher = col_character(),
+  ..   Rusher_ID = col_character(),
+  ..   RushAttempt = col_double(),
+  ..   RunLocation = col_character(),
+  ..   RunGap = col_character(),
+  ..   Receiver = col_character(),
+  ..   Receiver_ID = col_character(),
+  ..   Reception = col_double(),
+  ..   ReturnResult = col_character(),
+  ..   Returner = col_character(),
+  ..   BlockingPlayer = col_logical(),
+  ..   Tackler1 = col_character(),
+  ..   Tackler2 = col_character(),
+  ..   FieldGoalResult = col_character(),
+  ..   FieldGoalDistance = col_double(),
+  ..   Fumble = col_double(),
+  ..   RecFumbTeam = col_character(),
+  ..   RecFumbPlayer = col_character(),
+  ..   Sack = col_double(),
+  ..   Challenge.Replay = col_double(),
+  ..   ChalReplayResult = col_character(),
+  ..   Accepted.Penalty = col_double(),
+  ..   PenalizedTeam = col_character(),
+  ..   PenaltyType = col_character(),
+  ..   PenalizedPlayer = col_character(),
+  ..   Penalty.Yards = col_double(),
+  ..   PosTeamScore = col_double(),
+  ..   DefTeamScore = col_double(),
+  ..   ScoreDiff = col_double(),
+  ..   AbsScoreDiff = col_double(),
+  ..   HomeTeam = col_character(),
+  ..   AwayTeam = col_character(),
+  ..   Timeout_Indicator = col_double(),
+  ..   Timeout_Team = col_character(),
+  ..   posteam_timeouts_pre = col_double(),
+  ..   HomeTimeouts_Remaining_Pre = col_double(),
+  ..   AwayTimeouts_Remaining_Pre = col_double(),
+  ..   HomeTimeouts_Remaining_Post = col_double(),
+  ..   AwayTimeouts_Remaining_Post = col_double(),
+  ..   No_Score_Prob = col_double(),
+  ..   Opp_Field_Goal_Prob = col_double(),
+  ..   Opp_Safety_Prob = col_double(),
+  ..   Opp_Touchdown_Prob = col_double(),
+  ..   Field_Goal_Prob = col_double(),
+  ..   Safety_Prob = col_double(),
+  ..   Touchdown_Prob = col_double(),
+  ..   ExPoint_Prob = col_double(),
+  ..   TwoPoint_Prob = col_double(),
+  ..   ExpPts = col_double(),
+  ..   EPA = col_double(),
+  ..   airEPA = col_double(),
+  ..   yacEPA = col_double(),
+  ..   Home_WP_pre = col_double(),
+  ..   Away_WP_pre = col_double(),
+  ..   Home_WP_post = col_double(),
+  ..   Away_WP_post = col_double(),
+  ..   Win_Prob = col_double(),
+  ..   WPA = col_double(),
+  ..   airWPA = col_double(),
+  ..   yacWPA = col_double(),
+  ..   Season = col_double()
+  .. )
+ - attr(*, "problems")=&lt;externalptr&gt; </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>NULL</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#psych::describe(NFL_data)</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">#I am going to filter to just a 5 year span, 2012-2017, just because the dataset is so huge and taking a long time to load for a lot of things. </span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>NFL_data <span class="ot">&lt;-</span> NFL_data<span class="sc">%&gt;%</span> <span class="fu">filter</span>(Season <span class="sc">&gt;=</span> <span class="dv">2013</span>) </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">describe</span>(NFL_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                            vars      n          mean         sd       median
+Date                           1 227856           NaN         NA           NA
+GameID                         2 227856 2015130986.35 1425466.93 2.015111e+09
+Drive                          3 227856         12.25       7.12 1.200000e+01
+qtr                            4 227856          2.58       1.13 3.000000e+00
+down                           5 193519          2.00       1.01 2.000000e+00
+time                           6 227729           NaN         NA           NA
+TimeUnder                      7 227856          7.36       4.64 7.000000e+00
+TimeSecs                       8 227729       1694.47    1062.59 1.800000e+03
+PlayTimeDiff                   9 227606         20.43      17.81 1.700000e+01
+SideofField                   10 227559           NaN         NA           NA
+yrdln                         11 227384         28.58      12.79 3.000000e+01
+yrdline100                    12 227384         48.88      24.92 5.000000e+01
+ydstogo                       13 227856          7.33       4.90 9.000000e+00
+ydsnet                        14 227856         26.38      25.07 2.000000e+01
+GoalToGo                      15 227384          0.05       0.22 0.000000e+00
+FirstDown                     16 211649          0.29       0.45 0.000000e+00
+posteam                       17 213838           NaN         NA           NA
+DefensiveTeam                 18 213838           NaN         NA           NA
+desc                          19 227856           NaN         NA           NA
+PlayAttempted                 20 227856          1.00       0.00 1.000000e+00
+Yards.Gained                  21 227856          4.86       8.94 1.000000e+00
+sp                            22 227856          0.07       0.26 0.000000e+00
+Touchdown                     23 227856          0.03       0.17 0.000000e+00
+ExPointResult                 24   5635           NaN         NA           NA
+TwoPointConv                  25    395           NaN         NA           NA
+DefTwoPoint                   26      0           NaN         NA           NA
+Safety                        27 227856          0.00       0.02 0.000000e+00
+Onsidekick                    28 227856          0.00       0.04 0.000000e+00
+PuntResult                    29  12344           NaN         NA           NA
+PlayType                      30 227856           NaN         NA           NA
+Passer                        31  95311           NaN         NA           NA
+Passer_ID                     32 227856           NaN         NA           NA
+PassAttempt                   33 227856          0.42       0.49 0.000000e+00
+PassOutcome                   34  95339           NaN         NA           NA
+PassLength                    35  94769           NaN         NA           NA
+AirYards                      36 227856          3.28       7.52 0.000000e+00
+YardsAfterCatch               37 227856          1.29       4.23 0.000000e+00
+QBHit                         38 227856          0.06       0.23 0.000000e+00
+PassLocation                  39  94769           NaN         NA           NA
+InterceptionThrown            40 227856          0.01       0.10 0.000000e+00
+Interceptor                   41   2391           NaN         NA           NA
+Rusher                        42  66169           NaN         NA           NA
+Rusher_ID                     43 227856           NaN         NA           NA
+RushAttempt                   44 227856          0.29       0.45 0.000000e+00
+RunLocation                   45  65580           NaN         NA           NA
+RunGap                        46  47850           NaN         NA           NA
+Receiver                      47  91637           NaN         NA           NA
+Receiver_ID                   48 227856           NaN         NA           NA
+Reception                     49 227856          0.25       0.44 0.000000e+00
+ReturnResult                  50  11623           NaN         NA           NA
+Returner                      51  12717           NaN         NA           NA
+BlockingPlayer                52      0           NaN         NA           NA
+Tackler1                      53 133364           NaN         NA           NA
+Tackler2                      54  26839           NaN         NA           NA
+FieldGoalResult               55   5093           NaN         NA           NA
+FieldGoalDistance             56   5024         37.87      10.25 3.800000e+01
+Fumble                        57 227856          0.01       0.12 0.000000e+00
+RecFumbTeam                   58   2290           NaN         NA           NA
+RecFumbPlayer                 59   2290           NaN         NA           NA
+Sack                          60 227856          0.03       0.16 0.000000e+00
+Challenge.Replay              61 227856          0.01       0.09 0.000000e+00
+ChalReplayResult              62   2001           NaN         NA           NA
+Accepted.Penalty              63 227856          0.07       0.26 0.000000e+00
+PenalizedTeam                 64  16888           NaN         NA           NA
+PenaltyType                   65   9264           NaN         NA           NA
+PenalizedPlayer               66  16240           NaN         NA           NA
+Penalty.Yards                 67 227856          0.63       2.68 0.000000e+00
+PosTeamScore                  68 212772         10.26       9.39 8.000000e+00
+DefTeamScore                  69 212772         11.54       9.90 1.000000e+01
+ScoreDiff                     70 213839         -1.25      10.57 0.000000e+00
+AbsScoreDiff                  71 212772          7.69       7.33 7.000000e+00
+HomeTeam                      72 227856           NaN         NA           NA
+AwayTeam                      73 227856           NaN         NA           NA
+Timeout_Indicator             74 227856          0.04       0.20 0.000000e+00
+Timeout_Team                  75 227856           NaN         NA           NA
+posteam_timeouts_pre          76 227856          2.53       0.78 3.000000e+00
+HomeTimeouts_Remaining_Pre    77 227856          2.55       0.75 3.000000e+00
+AwayTimeouts_Remaining_Pre    78 227856          2.53       0.78 3.000000e+00
+HomeTimeouts_Remaining_Post   79 227856          2.53       0.77 3.000000e+00
+AwayTimeouts_Remaining_Post   80 227856          2.50       0.80 3.000000e+00
+No_Score_Prob                 81 227757          0.13       0.20 2.000000e-02
+Opp_Field_Goal_Prob           82 227757          0.09       0.07 8.000000e-02
+Opp_Safety_Prob               83 227757          0.00       0.00 0.000000e+00
+Opp_Touchdown_Prob            84 227757          0.14       0.11 1.200000e-01
+Field_Goal_Prob               85 227757          0.24       0.16 2.300000e-01
+Safety_Prob                   86 227757          0.00       0.00 0.000000e+00
+Touchdown_Prob                87 227757          0.30       0.17 3.100000e-01
+ExPoint_Prob                  88 227856          0.02       0.15 0.000000e+00
+TwoPoint_Prob                 89 227856          0.00       0.02 0.000000e+00
+ExpPts                        90 227757          1.56       1.75 1.220000e+00
+EPA                           91 227658          0.03       1.32 0.000000e+00
+airEPA                        92  90023          0.52       1.39 2.900000e-01
+yacEPA                        93  89962         -0.37       1.96 0.000000e+00
+Home_WP_pre                   94 213841          0.54       0.28 5.400000e-01
+Away_WP_pre                   95 213841          0.46       0.28 4.600000e-01
+Home_WP_post                  96 212931          0.54       0.29 5.400000e-01
+Away_WP_post                  97 212931          0.46       0.29 4.600000e-01
+Win_Prob                      98 213811          0.50       0.29 5.000000e-01
+WPA                           99 224761          0.00       0.05 0.000000e+00
+airWPA                       100  89958          0.02       0.06 0.000000e+00
+yacWPA                       101  89806         -0.01       0.07 0.000000e+00
+Season                       102 227856       2015.00       1.41 2.015000e+03
+                                     min          max      range  skew kurtosis
+Date                                 Inf         -Inf       -Inf    NA       NA
+GameID                       2.01309e+09 2.017123e+09 4032615.00 -0.02    -1.32
+Drive                        1.00000e+00 3.500000e+01      34.00  0.20    -0.92
+qtr                          1.00000e+00 5.000000e+00       4.00  0.00    -1.30
+down                         1.00000e+00 4.000000e+00       3.00  0.61    -0.79
+time                                 Inf         -Inf       -Inf    NA       NA
+TimeUnder                    0.00000e+00 1.500000e+01      15.00  0.15    -1.28
+TimeSecs                    -9.00000e+02 3.600000e+03    4500.00  0.03    -1.12
+PlayTimeDiff                 0.00000e+00 9.430000e+02     943.00  5.91   274.64
+SideofField                          Inf         -Inf       -Inf    NA       NA
+yrdln                        1.00000e+00 5.000000e+01      49.00 -0.29    -0.81
+yrdline100                   1.00000e+00 9.900000e+01      98.00 -0.13    -1.03
+ydstogo                      0.00000e+00 4.800000e+01      48.00  0.35     0.98
+ydsnet                      -8.40000e+01 9.900000e+01     183.00  0.70    -0.56
+GoalToGo                     0.00000e+00 1.000000e+00       1.00  4.15    15.25
+FirstDown                    0.00000e+00 1.000000e+00       1.00  0.92    -1.15
+posteam                              Inf         -Inf       -Inf    NA       NA
+DefensiveTeam                        Inf         -Inf       -Inf    NA       NA
+desc                                 Inf         -Inf       -Inf    NA       NA
+PlayAttempted                1.00000e+00 1.000000e+00       0.00   NaN      NaN
+Yards.Gained                -3.40000e+01 9.900000e+01     133.00  2.95    14.22
+sp                           0.00000e+00 1.000000e+00       1.00  3.31     8.97
+Touchdown                    0.00000e+00 1.000000e+00       1.00  5.59    29.27
+ExPointResult                        Inf         -Inf       -Inf    NA       NA
+TwoPointConv                         Inf         -Inf       -Inf    NA       NA
+DefTwoPoint                          Inf         -Inf       -Inf    NA       NA
+Safety                       0.00000e+00 1.000000e+00       1.00 48.94  2393.46
+Onsidekick                   0.00000e+00 1.000000e+00       1.00 26.59   704.83
+PuntResult                           Inf         -Inf       -Inf    NA       NA
+PlayType                             Inf         -Inf       -Inf    NA       NA
+Passer                               Inf         -Inf       -Inf    NA       NA
+Passer_ID                            Inf         -Inf       -Inf    NA       NA
+PassAttempt                  0.00000e+00 1.000000e+00       1.00  0.33    -1.89
+PassOutcome                          Inf         -Inf       -Inf    NA       NA
+PassLength                           Inf         -Inf       -Inf    NA       NA
+AirYards                    -4.10000e+01 6.600000e+01     107.00  2.90    10.16
+YardsAfterCatch             -4.40000e+01 8.800000e+01     132.00  6.22    60.18
+QBHit                        0.00000e+00 1.000000e+00       1.00  3.87    12.98
+PassLocation                         Inf         -Inf       -Inf    NA       NA
+InterceptionThrown           0.00000e+00 1.000000e+00       1.00  9.60    90.11
+Interceptor                          Inf         -Inf       -Inf    NA       NA
+Rusher                               Inf         -Inf       -Inf    NA       NA
+Rusher_ID                            Inf         -Inf       -Inf    NA       NA
+RushAttempt                  0.00000e+00 1.000000e+00       1.00  0.92    -1.15
+RunLocation                          Inf         -Inf       -Inf    NA       NA
+RunGap                               Inf         -Inf       -Inf    NA       NA
+Receiver                             Inf         -Inf       -Inf    NA       NA
+Receiver_ID                          Inf         -Inf       -Inf    NA       NA
+Reception                    0.00000e+00 1.000000e+00       1.00  1.13    -0.73
+ReturnResult                         Inf         -Inf       -Inf    NA       NA
+Returner                             Inf         -Inf       -Inf    NA       NA
+BlockingPlayer                       Inf         -Inf       -Inf    NA       NA
+Tackler1                             Inf         -Inf       -Inf    NA       NA
+Tackler2                             Inf         -Inf       -Inf    NA       NA
+FieldGoalResult                      Inf         -Inf       -Inf    NA       NA
+FieldGoalDistance            1.80000e+01 7.100000e+01      53.00  0.00    -1.00
+Fumble                       0.00000e+00 1.000000e+00       1.00  8.41    68.78
+RecFumbTeam                          Inf         -Inf       -Inf    NA       NA
+RecFumbPlayer                        Inf         -Inf       -Inf    NA       NA
+Sack                         0.00000e+00 1.000000e+00       1.00  5.75    31.02
+Challenge.Replay             0.00000e+00 1.000000e+00       1.00 10.52   108.60
+ChalReplayResult                     Inf         -Inf       -Inf    NA       NA
+Accepted.Penalty             0.00000e+00 1.000000e+00       1.00  3.25     8.57
+PenalizedTeam                        Inf         -Inf       -Inf    NA       NA
+PenaltyType                          Inf         -Inf       -Inf    NA       NA
+PenalizedPlayer                      Inf         -Inf       -Inf    NA       NA
+Penalty.Yards                0.00000e+00 6.600000e+01      66.00  6.04    52.71
+PosTeamScore                 0.00000e+00 5.600000e+01      56.00  0.89     0.44
+DefTeamScore                 0.00000e+00 5.600000e+01      56.00  0.82     0.27
+ScoreDiff                   -5.40000e+01 5.300000e+01     107.00 -0.06     1.25
+AbsScoreDiff                 0.00000e+00 5.400000e+01      54.00  1.37     2.20
+HomeTeam                             Inf         -Inf       -Inf    NA       NA
+AwayTeam                             Inf         -Inf       -Inf    NA       NA
+Timeout_Indicator            0.00000e+00 1.000000e+00       1.00  4.63    19.40
+Timeout_Team                         Inf         -Inf       -Inf    NA       NA
+posteam_timeouts_pre         0.00000e+00 3.000000e+00       3.00 -1.69     2.19
+HomeTimeouts_Remaining_Pre  -1.00000e+00 3.000000e+00       4.00 -1.74     2.45
+AwayTimeouts_Remaining_Pre  -1.00000e+00 3.000000e+00       4.00 -1.68     2.19
+HomeTimeouts_Remaining_Post -1.00000e+00 3.000000e+00       4.00 -1.69     2.23
+AwayTimeouts_Remaining_Post -1.00000e+00 3.000000e+00       4.00 -1.63     1.98
+No_Score_Prob                0.00000e+00 1.000000e+00       1.00  1.97     3.58
+Opp_Field_Goal_Prob          0.00000e+00 3.600000e-01       0.36  0.58    -0.38
+Opp_Safety_Prob              0.00000e+00 3.000000e-02       0.03  2.33     7.55
+Opp_Touchdown_Prob           0.00000e+00 5.000000e-01       0.50  0.52    -0.65
+Field_Goal_Prob              0.00000e+00 9.900000e-01       0.99  1.29     4.21
+Safety_Prob                  0.00000e+00 2.000000e-02       0.02 -0.15     1.21
+Touchdown_Prob               0.00000e+00 9.100000e-01       0.91  0.08     0.27
+ExPoint_Prob                 0.00000e+00 9.900000e-01       0.99  6.13    35.63
+TwoPoint_Prob                0.00000e+00 4.700000e-01       0.47 23.96   571.85
+ExpPts                      -3.84000e+00 6.500000e+00      10.34  0.26    -0.31
+EPA                         -1.34900e+01 9.510000e+00      23.00 -0.26     6.89
+airEPA                      -1.28500e+01 7.350000e+00      20.20  0.55     0.42
+yacEPA                      -1.40000e+01 9.410000e+00      23.41 -1.02     2.62
+Home_WP_pre                  0.00000e+00 1.000000e+00       1.00 -0.14    -0.93
+Away_WP_pre                  0.00000e+00 1.000000e+00       1.00  0.14    -0.93
+Home_WP_post                 0.00000e+00 1.000000e+00       1.00 -0.14    -0.95
+Away_WP_post                 0.00000e+00 1.000000e+00       1.00  0.14    -0.95
+Win_Prob                     0.00000e+00 1.000000e+00       1.00 -0.02    -0.97
+WPA                         -9.80000e-01 9.900000e-01       1.98  0.50    70.60
+airWPA                      -9.90000e-01 9.900000e-01       1.99  1.79    64.53
+yacWPA                      -9.80000e-01 1.000000e+00       1.98 -1.78    34.21
+Season                       2.01300e+03 2.017000e+03       4.00  0.00    -1.29
+                                 se
+Date                             NA
+GameID                      2986.26
+Drive                          0.01
+qtr                            0.00
+down                           0.00
+time                             NA
+TimeUnder                      0.01
+TimeSecs                       2.23
+PlayTimeDiff                   0.04
+SideofField                      NA
+yrdln                          0.03
+yrdline100                     0.05
+ydstogo                        0.01
+ydsnet                         0.05
+GoalToGo                       0.00
+FirstDown                      0.00
+posteam                          NA
+DefensiveTeam                    NA
+desc                             NA
+PlayAttempted                  0.00
+Yards.Gained                   0.02
+sp                             0.00
+Touchdown                      0.00
+ExPointResult                    NA
+TwoPointConv                     NA
+DefTwoPoint                      NA
+Safety                         0.00
+Onsidekick                     0.00
+PuntResult                       NA
+PlayType                         NA
+Passer                           NA
+Passer_ID                        NA
+PassAttempt                    0.00
+PassOutcome                      NA
+PassLength                       NA
+AirYards                       0.02
+YardsAfterCatch                0.01
+QBHit                          0.00
+PassLocation                     NA
+InterceptionThrown             0.00
+Interceptor                      NA
+Rusher                           NA
+Rusher_ID                        NA
+RushAttempt                    0.00
+RunLocation                      NA
+RunGap                           NA
+Receiver                         NA
+Receiver_ID                      NA
+Reception                      0.00
+ReturnResult                     NA
+Returner                         NA
+BlockingPlayer                   NA
+Tackler1                         NA
+Tackler2                         NA
+FieldGoalResult                  NA
+FieldGoalDistance              0.14
+Fumble                         0.00
+RecFumbTeam                      NA
+RecFumbPlayer                    NA
+Sack                           0.00
+Challenge.Replay               0.00
+ChalReplayResult                 NA
+Accepted.Penalty               0.00
+PenalizedTeam                    NA
+PenaltyType                      NA
+PenalizedPlayer                  NA
+Penalty.Yards                  0.01
+PosTeamScore                   0.02
+DefTeamScore                   0.02
+ScoreDiff                      0.02
+AbsScoreDiff                   0.02
+HomeTeam                         NA
+AwayTeam                         NA
+Timeout_Indicator              0.00
+Timeout_Team                     NA
+posteam_timeouts_pre           0.00
+HomeTimeouts_Remaining_Pre     0.00
+AwayTimeouts_Remaining_Pre     0.00
+HomeTimeouts_Remaining_Post    0.00
+AwayTimeouts_Remaining_Post    0.00
+No_Score_Prob                  0.00
+Opp_Field_Goal_Prob            0.00
+Opp_Safety_Prob                0.00
+Opp_Touchdown_Prob             0.00
+Field_Goal_Prob                0.00
+Safety_Prob                    0.00
+Touchdown_Prob                 0.00
+ExPoint_Prob                   0.00
+TwoPoint_Prob                  0.00
+ExpPts                         0.00
+EPA                            0.00
+airEPA                         0.00
+yacEPA                         0.01
+Home_WP_pre                    0.00
+Away_WP_pre                    0.00
+Home_WP_post                   0.00
+Away_WP_post                   0.00
+Win_Prob                       0.00
+WPA                            0.00
+airWPA                         0.00
+yacWPA                         0.00
+Season                         0.00</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#def2point is all NA in this version, but I am not interested in this variable anyway </span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>NFL_data <span class="ot">&lt;-</span> NFL_data <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>DefTwoPoint)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colSums</span>(<span class="fu">is.na</span>(NFL_data))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                       Date                      GameID 
+                          0                           0 
+                      Drive                         qtr 
+                          0                           0 
+                       down                        time 
+                      34337                         127 
+                  TimeUnder                    TimeSecs 
+                          0                         127 
+               PlayTimeDiff                 SideofField 
+                        250                         297 
+                      yrdln                  yrdline100 
+                        472                         472 
+                    ydstogo                      ydsnet 
+                          0                           0 
+                   GoalToGo                   FirstDown 
+                        472                       16207 
+                    posteam               DefensiveTeam 
+                      14018                       14018 
+                       desc               PlayAttempted 
+                          0                           0 
+               Yards.Gained                          sp 
+                          0                           0 
+                  Touchdown               ExPointResult 
+                          0                      222221 
+               TwoPointConv                      Safety 
+                     227461                           0 
+                 Onsidekick                  PuntResult 
+                          0                      215512 
+                   PlayType                      Passer 
+                          0                      132545 
+                  Passer_ID                 PassAttempt 
+                          0                           0 
+                PassOutcome                  PassLength 
+                     132517                      133087 
+                   AirYards             YardsAfterCatch 
+                          0                           0 
+                      QBHit                PassLocation 
+                          0                      133087 
+         InterceptionThrown                 Interceptor 
+                          0                      225465 
+                     Rusher                   Rusher_ID 
+                     161687                           0 
+                RushAttempt                 RunLocation 
+                          0                      162276 
+                     RunGap                    Receiver 
+                     180006                      136219 
+                Receiver_ID                   Reception 
+                          0                           0 
+               ReturnResult                    Returner 
+                     216233                      215139 
+             BlockingPlayer                    Tackler1 
+                     227856                       94492 
+                   Tackler2             FieldGoalResult 
+                     201017                      222763 
+          FieldGoalDistance                      Fumble 
+                     222832                           0 
+                RecFumbTeam               RecFumbPlayer 
+                     225566                      225566 
+                       Sack            Challenge.Replay 
+                          0                           0 
+           ChalReplayResult            Accepted.Penalty 
+                     225855                           0 
+              PenalizedTeam                 PenaltyType 
+                     210968                      218592 
+            PenalizedPlayer               Penalty.Yards 
+                     211616                           0 
+               PosTeamScore                DefTeamScore 
+                      15084                       15084 
+                  ScoreDiff                AbsScoreDiff 
+                      14017                       15084 
+                   HomeTeam                    AwayTeam 
+                          0                           0 
+          Timeout_Indicator                Timeout_Team 
+                          0                           0 
+       posteam_timeouts_pre  HomeTimeouts_Remaining_Pre 
+                          0                           0 
+ AwayTimeouts_Remaining_Pre HomeTimeouts_Remaining_Post 
+                          0                           0 
+AwayTimeouts_Remaining_Post               No_Score_Prob 
+                          0                          99 
+        Opp_Field_Goal_Prob             Opp_Safety_Prob 
+                         99                          99 
+         Opp_Touchdown_Prob             Field_Goal_Prob 
+                         99                          99 
+                Safety_Prob              Touchdown_Prob 
+                         99                          99 
+               ExPoint_Prob               TwoPoint_Prob 
+                          0                           0 
+                     ExpPts                         EPA 
+                         99                         198 
+                     airEPA                      yacEPA 
+                     137833                      137894 
+                Home_WP_pre                 Away_WP_pre 
+                      14015                       14015 
+               Home_WP_post                Away_WP_post 
+                      14925                       14925 
+                   Win_Prob                         WPA 
+                      14045                        3095 
+                     airWPA                      yacWPA 
+                     137898                      138050 
+                     Season 
+                          0 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(NFL_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  [1] "Date"                        "GameID"                     
+  [3] "Drive"                       "qtr"                        
+  [5] "down"                        "time"                       
+  [7] "TimeUnder"                   "TimeSecs"                   
+  [9] "PlayTimeDiff"                "SideofField"                
+ [11] "yrdln"                       "yrdline100"                 
+ [13] "ydstogo"                     "ydsnet"                     
+ [15] "GoalToGo"                    "FirstDown"                  
+ [17] "posteam"                     "DefensiveTeam"              
+ [19] "desc"                        "PlayAttempted"              
+ [21] "Yards.Gained"                "sp"                         
+ [23] "Touchdown"                   "ExPointResult"              
+ [25] "TwoPointConv"                "Safety"                     
+ [27] "Onsidekick"                  "PuntResult"                 
+ [29] "PlayType"                    "Passer"                     
+ [31] "Passer_ID"                   "PassAttempt"                
+ [33] "PassOutcome"                 "PassLength"                 
+ [35] "AirYards"                    "YardsAfterCatch"            
+ [37] "QBHit"                       "PassLocation"               
+ [39] "InterceptionThrown"          "Interceptor"                
+ [41] "Rusher"                      "Rusher_ID"                  
+ [43] "RushAttempt"                 "RunLocation"                
+ [45] "RunGap"                      "Receiver"                   
+ [47] "Receiver_ID"                 "Reception"                  
+ [49] "ReturnResult"                "Returner"                   
+ [51] "BlockingPlayer"              "Tackler1"                   
+ [53] "Tackler2"                    "FieldGoalResult"            
+ [55] "FieldGoalDistance"           "Fumble"                     
+ [57] "RecFumbTeam"                 "RecFumbPlayer"              
+ [59] "Sack"                        "Challenge.Replay"           
+ [61] "ChalReplayResult"            "Accepted.Penalty"           
+ [63] "PenalizedTeam"               "PenaltyType"                
+ [65] "PenalizedPlayer"             "Penalty.Yards"              
+ [67] "PosTeamScore"                "DefTeamScore"               
+ [69] "ScoreDiff"                   "AbsScoreDiff"               
+ [71] "HomeTeam"                    "AwayTeam"                   
+ [73] "Timeout_Indicator"           "Timeout_Team"               
+ [75] "posteam_timeouts_pre"        "HomeTimeouts_Remaining_Pre" 
+ [77] "AwayTimeouts_Remaining_Pre"  "HomeTimeouts_Remaining_Post"
+ [79] "AwayTimeouts_Remaining_Post" "No_Score_Prob"              
+ [81] "Opp_Field_Goal_Prob"         "Opp_Safety_Prob"            
+ [83] "Opp_Touchdown_Prob"          "Field_Goal_Prob"            
+ [85] "Safety_Prob"                 "Touchdown_Prob"             
+ [87] "ExPoint_Prob"                "TwoPoint_Prob"              
+ [89] "ExpPts"                      "EPA"                        
+ [91] "airEPA"                      "yacEPA"                     
+ [93] "Home_WP_pre"                 "Away_WP_pre"                
+ [95] "Home_WP_post"                "Away_WP_post"               
+ [97] "Win_Prob"                    "WPA"                        
+ [99] "airWPA"                      "yacWPA"                     
+[101] "Season"                     </code></pre>
+</div>
+</div>
+<section id="what-data-are-we-working-with" class="level3">
+<h3 class="anchored" data-anchor-id="what-data-are-we-working-with">1. What data are we working with?</h3>
+<p>There are a couple things off the top of my head I’d be interested in. One is the percent of 2 point conversions, because there are a lot of times I question the decision of these and also I know 2 point attempt rates have been increasing. Another is TJ Watt’s stats compared to other defensive players because I think he gets snubbed every year for DPOY.</p>
+<p>Here I am just listing out the variables that I think I will be most interested in so I can subset the data set down to it.</p>
+<ul>
+<li><p>sp = Binary indicatior for whether or not a score occured on the play</p></li>
+<li><p>yrdln = String indicating the current field position for a given play</p></li>
+<li><p>desc = Detailed string description for the given play play_type = String indicating the type of play: pass (includes sacks), run (includes scrambles), punt, field_goal, kickoff, extra_point, qb_kneel, qb_spike, no_play (timeouts and penalties), and missing for rows indicating end of play.</p></li>
+<li><p>yards.gained = Numeric yards gained (or lost) for the given play.</p></li>
+<li><p>yrdline100 = Numeric distance in the number of yards from the opponent’s endzone for the posteam.</p></li>
+<li><p>hometeam = String abbreviation for the home team.</p></li>
+<li><p>awayteam = String abbreviation for the home team.</p></li>
+<li><p>posteam = String abbreviation for the team with possession.</p></li>
+<li><p>posteamscore = score of the team with possession</p></li>
+<li><p>defteamscore = score of the team on defense</p></li>
+<li><p>down = The down for the given play</p></li>
+<li><p>qtr = Quarter of the game (5 is overtime).</p></li>
+<li><p>ydsnet = Numeric value for total yards gained on the given drive.</p></li>
+<li><p>PassLength = String indicator for pass length: short or deep.</p></li>
+<li><p>twopointconv = String indicator for result of two point conversion attempt: success, failure, safety (touchback in defensive endzone is 1 point apparently), or return.</p></li>
+<li><p>timeout_indicator = Binary indicator for whether or not a timeout was called.</p></li>
+<li><p>timeout_team = team that called the timeout</p></li>
+<li><p>epa = Expected points added (EPA) by the posteam for the given play: <strong>I am not going to mess with the EPA variables at all because it isn’t clear how they were calculated.</strong> <strong>Same goes for wp (win probability) variables.</strong></p></li>
+<li><p>passoutcome= outcome of pass</p></li>
+<li><p>interceptionthrown = binary indicator for if the pass was intercepted</p></li>
+<li><p>fumble = binary indicator for if a fumble occured</p></li>
+<li><p>sack = Binary indicator for if the play ended in a sack.</p></li>
+<li><p>touchdown = Binary indicator for if the play resulted in a TD.</p></li>
+<li><p>Tackler1 = String name of one of the players with a tackle assist.</p></li>
+<li><p>Tackler2 = String name of one of the players with a tackle assist.</p></li>
+</ul>
+<p>I don’t think there is really enough information to fairly judge TJ, but I still think he deserves DPOY.</p>
+<p>I am just going to focus on two-point conversion attempts and 4th and short (less than or equal to two yards) conversions for touchdowns.</p>
+</section>
+<section id="two-point-conversion-attempts" class="level3">
+<h3 class="anchored" data-anchor-id="two-point-conversion-attempts">2. Two-Point Conversion Attempts</h3>
+<p>Here lets create some basic contingency tables for the 5 seasons we are interested in and accompaning plots.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Creating seperate tibbles for each year and removing probabilities variables because I am not interested in them </span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>yr2013<span class="ot">&lt;-</span> NFL_data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Season <span class="sc">==</span> <span class="dv">2013</span>) <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span><span class="fu">contains</span>(<span class="st">"WPA"</span>), <span class="sc">-</span><span class="fu">contains</span>(<span class="st">"WP"</span>), <span class="sc">-</span><span class="fu">contains</span>(<span class="st">"EPA"</span>), <span class="sc">-</span><span class="fu">contains</span>(<span class="st">"Prob"</span>))</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>yr2014<span class="ot">&lt;-</span> NFL_data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Season <span class="sc">==</span> <span class="dv">2014</span>) <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span><span class="fu">contains</span>(<span class="st">"WPA"</span>), <span class="sc">-</span><span class="fu">contains</span>(<span class="st">"WP"</span>), <span class="sc">-</span><span class="fu">contains</span>(<span class="st">"EPA"</span>), <span class="sc">-</span><span class="fu">contains</span>(<span class="st">"Prob"</span>))</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>yr2015<span class="ot">&lt;-</span> NFL_data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Season <span class="sc">==</span> <span class="dv">2015</span>) <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span><span class="fu">contains</span>(<span class="st">"WPA"</span>), <span class="sc">-</span><span class="fu">contains</span>(<span class="st">"WP"</span>), <span class="sc">-</span><span class="fu">contains</span>(<span class="st">"EPA"</span>), <span class="sc">-</span><span class="fu">contains</span>(<span class="st">"Prob"</span>))</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>yr2016<span class="ot">&lt;-</span> NFL_data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Season <span class="sc">==</span> <span class="dv">2016</span>) <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span><span class="fu">contains</span>(<span class="st">"WPA"</span>), <span class="sc">-</span><span class="fu">contains</span>(<span class="st">"WP"</span>), <span class="sc">-</span><span class="fu">contains</span>(<span class="st">"EPA"</span>), <span class="sc">-</span><span class="fu">contains</span>(<span class="st">"Prob"</span>))</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>yr2017<span class="ot">&lt;-</span> NFL_data <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Season <span class="sc">==</span> <span class="dv">2017</span>) <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span><span class="fu">contains</span>(<span class="st">"WPA"</span>), <span class="sc">-</span><span class="fu">contains</span>(<span class="st">"WP"</span>), <span class="sc">-</span><span class="fu">contains</span>(<span class="st">"EPA"</span>), <span class="sc">-</span><span class="fu">contains</span>(<span class="st">"Prob"</span>))</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co">#Individual seasons contingency tables for two point conversions </span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>twopt_2013 <span class="ot">&lt;-</span> <span class="fu">table</span>(yr2013<span class="sc">$</span>TwoPointConv)</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>twopt_2013</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Failure Success 
+     38      33 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>twopt_2014 <span class="ot">&lt;-</span> <span class="fu">table</span>(yr2014<span class="sc">$</span>TwoPointConv)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>twopt_2014</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Failure Success 
+     31      28 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>twopt_2015 <span class="ot">&lt;-</span> <span class="fu">table</span>(yr2015<span class="sc">$</span>TwoPointConv)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>twopt_2015</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Failure Success 
+     46      43 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>twopt_2016 <span class="ot">&lt;-</span> <span class="fu">table</span>(yr2016<span class="sc">$</span>TwoPointConv)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>twopt_2016</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Failure Success 
+     52      47 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>twopt_2017 <span class="ot">&lt;-</span> <span class="fu">table</span>(yr2017<span class="sc">$</span>TwoPointConv)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>twopt_2017</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Failure Success 
+     44      33 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Multiyear contingency table (Can't just use table function because they dont have the same counts)</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>temp_2013 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">Failure =</span> <span class="dv">38</span>, <span class="at">Success =</span> <span class="dv">33</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>temp_2014 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">Failure =</span> <span class="dv">31</span>, <span class="at">Success =</span> <span class="dv">28</span>)</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>temp_2015 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">Failure =</span> <span class="dv">46</span>, <span class="at">Success =</span> <span class="dv">43</span>)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>temp_2016 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">Failure =</span> <span class="dv">52</span>, <span class="at">Success =</span> <span class="dv">47</span>)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>temp_2017 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">Failure =</span> <span class="dv">44</span>, <span class="at">Success =</span> <span class="dv">33</span>)</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Combine data</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>multiyr_2ptdata <span class="ot">&lt;-</span> <span class="fu">rbind</span>(temp_2013, temp_2014, temp_2015, temp_2016, temp_2017)</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Assign row and column names for better interpretation</span></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(multiyr_2ptdata) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"2013"</span>, <span class="st">"2014"</span>, <span class="st">"2015"</span>, <span class="st">"2016"</span>, <span class="st">"2017"</span>)</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(multiyr_2ptdata) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Failure"</span>, <span class="st">"Success"</span>)</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>multiyr_2ptdata</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     Failure Success
+2013      38      33
+2014      31      28
+2015      46      43
+2016      52      47
+2017      44      33</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co">#barplot of data to view any trends</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>multi_2ptdata<span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(multiyr_2ptdata)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Adding column for the year </span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>multi_2ptdata<span class="sc">$</span>year <span class="ot">&lt;-</span> <span class="fu">rownames</span>(multiyr_2ptdata)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">#reshaping for ggplot, i like this function from reshape2</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  multi_2pt_long<span class="ot">&lt;-</span> <span class="fu">melt</span>(multi_2ptdata, <span class="at">id.vars =</span> <span class="st">"year"</span>)</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">#plotting</span></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(multi_2pt_long, <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> value, <span class="at">fill =</span> variable)) <span class="sc">+</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Two-Point Conversion Successes and Failures by Year"</span>,</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Year"</span>,</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Count"</span>) <span class="sc">+</span></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Failure"</span> <span class="ot">=</span> <span class="st">"red"</span>, <span class="st">"Success"</span> <span class="ot">=</span> <span class="st">"green"</span>)) <span class="sc">+</span></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="data_analysis_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Definitely seems to have a slightly positive trend in attempts! </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="th-down-short-conversion-attempts" class="level3">
+<h3 class="anchored" data-anchor-id="th-down-short-conversion-attempts">3. 4th Down &amp; Short Conversion Attempts</h3>
+<section id="here-lets-do-basic-contingency-tables-and-plots-like-we-did-for-2-point-conversion-attempts.-theres-about-a-50-chance-of-making-it-on-4th-and-2-so-that-is-what-i-am-going-to-consider-here-for-4th-and-short-conversions." class="level5">
+<h5 class="anchored" data-anchor-id="here-lets-do-basic-contingency-tables-and-plots-like-we-did-for-2-point-conversion-attempts.-theres-about-a-50-chance-of-making-it-on-4th-and-2-so-that-is-what-i-am-going-to-consider-here-for-4th-and-short-conversions.">Here lets do basic contingency tables and plots like we did for 2 point conversion attempts. There’s about a 50% chance of making it on 4th and 2, so that is what I am going to consider here for 4th and short conversions.</h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>fourth_2013<span class="ot">&lt;-</span> yr2013 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(down <span class="sc">==</span> <span class="dv">4</span>, yrdline100 <span class="sc">&lt;=</span> <span class="dv">2</span>)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>fourth_2014<span class="ot">&lt;-</span> yr2014 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(down <span class="sc">==</span> <span class="dv">4</span>, yrdline100 <span class="sc">&lt;=</span> <span class="dv">2</span>)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>fourth_2015<span class="ot">&lt;-</span> yr2015 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(down <span class="sc">==</span> <span class="dv">4</span>, yrdline100 <span class="sc">&lt;=</span> <span class="dv">2</span>)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>fourth_2016<span class="ot">&lt;-</span> yr2016 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(down <span class="sc">==</span> <span class="dv">4</span>, yrdline100 <span class="sc">&lt;=</span> <span class="dv">2</span>)</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>fourth_2017<span class="ot">&lt;-</span> yr2017 <span class="sc">%&gt;%</span> <span class="fu">filter</span>(down <span class="sc">==</span> <span class="dv">4</span>, yrdline100 <span class="sc">&lt;=</span> <span class="dv">2</span>)</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(fourth_2013<span class="sc">$</span>Touchdown)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ 0  1 
+67 23 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(fourth_2014<span class="sc">$</span>Touchdown)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ 0  1 
+52 13 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(fourth_2015<span class="sc">$</span>Touchdown)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ 0  1 
+48 16 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(fourth_2016<span class="sc">$</span>Touchdown)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ 0  1 
+46 19 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(fourth_2017<span class="sc">$</span>Touchdown)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+ 0  1 
+47 16 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Multiyear contingency table (Can't just use table function because they dont have the same counts)</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>four_temp_2013 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">Failure =</span> <span class="dv">67</span>, <span class="at">Success =</span> <span class="dv">23</span>)</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>four_temp_2014 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">Failure =</span> <span class="dv">52</span>, <span class="at">Success =</span> <span class="dv">13</span>)</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>four_temp_2015 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">Failure =</span> <span class="dv">48</span>, <span class="at">Success =</span> <span class="dv">16</span>)</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>four_temp_2016 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">Failure =</span> <span class="dv">46</span>, <span class="at">Success =</span> <span class="dv">19</span>)</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>four_temp_2017 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="at">Failure =</span> <span class="dv">47</span>, <span class="at">Success =</span> <span class="dv">16</span>)</span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Combine data</span></span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>multiyr_fourthdata <span class="ot">&lt;-</span> <span class="fu">rbind</span>(four_temp_2013, four_temp_2014, four_temp_2015, four_temp_2016, four_temp_2017)</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Assign row and column names for better interpretation</span></span>
+<span id="cb39-12"><a href="#cb39-12" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(multiyr_fourthdata) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"2013"</span>, <span class="st">"2014"</span>, <span class="st">"2015"</span>, <span class="st">"2016"</span>, <span class="st">"2017"</span>)</span>
+<span id="cb39-13"><a href="#cb39-13" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(multiyr_fourthdata) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Failure"</span>, <span class="st">"Success"</span>)</span>
+<span id="cb39-14"><a href="#cb39-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-15"><a href="#cb39-15" aria-hidden="true" tabindex="-1"></a>multiyr_fourthdata</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     Failure Success
+2013      67      23
+2014      52      13
+2015      48      16
+2016      46      19
+2017      47      16</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co">#barplot of data to view any trends</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>multi_fourthdata<span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(multiyr_fourthdata)</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Adding column for the year </span></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>multi_fourthdata<span class="sc">$</span>year <span class="ot">&lt;-</span> <span class="fu">rownames</span>(multiyr_fourthdata)</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">#reshaping for ggplot, i like this function from reshape2</span></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>  multi_fourth_long<span class="ot">&lt;-</span> <span class="fu">melt</span>(multi_fourthdata, <span class="at">id.vars =</span> <span class="st">"year"</span>)</span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">#plotting</span></span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(multi_fourth_long, <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> value, <span class="at">fill =</span> variable)) <span class="sc">+</span></span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Fourth and Short Conversion Successes and Failures by Year"</span>,</span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Year"</span>,</span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Count"</span>) <span class="sc">+</span></span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Failure"</span> <span class="ot">=</span> <span class="st">"red"</span>, <span class="st">"Success"</span> <span class="ot">=</span> <span class="st">"green"</span>)) <span class="sc">+</span></span>
+<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="data_analysis_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Hey, the amount of failures has decreased at least! Just kidding, this isn't a fair measure because it looks like overall attempts have decreased from 2013-2017. </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="lets-see-if-the-data-differs-by-team.-first-2-point-conversions" class="level3">
+<h3 class="anchored" data-anchor-id="lets-see-if-the-data-differs-by-team.-first-2-point-conversions">4. Lets see if the data differs by team. First, 2 point conversions:</h3>
+<p>First we will view bar plots of the count data of success and failures, then look at conversion rates</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Filter the dataset for two-point conversion plays</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>two_point_plays <span class="ot">&lt;-</span> NFL_data <span class="sc">%&gt;%</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(TwoPointConv <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Success"</span>, <span class="st">"Failure"</span>))</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">#create a contingency table based on team, year, and two-point conversion success</span></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>contingency_2pt_by_team_year <span class="ot">&lt;-</span> <span class="fu">table</span>(two_point_plays<span class="sc">$</span>posteam, </span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>                                         two_point_plays<span class="sc">$</span>Season, </span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>                                         two_point_plays<span class="sc">$</span>TwoPointConv)</span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>  <span class="co">#View the contingency table</span></span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>contingency_2pt_by_team_year</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>, ,  = Failure
+
+     
+      2013 2014 2015 2016 2017
+  ARI    3    3    0    3    1
+  ATL    0    1    1    4    1
+  BAL    1    3    2    1    1
+  BUF    0    0    4    0    1
+  CAR    0    1    0    3    1
+  CHI    2    1    3    0    1
+  CIN    1    0    1    0    0
+  CLE    1    1    1    2    0
+  DAL    2    0    0    2    4
+  DEN    1    0    1    1    1
+  DET    3    2    3    1    3
+  GB     4    1    2    2    1
+  HOU    0    0    1    0    3
+  IND    2    3    1    1    1
+  JAC    1    2    4    0    0
+  JAX    0    0    0    0    2
+  KC     0    2    2    0    1
+  LA     0    0    0    1    0
+  LAC    0    0    0    0    1
+  MIA    1    1    1    1    1
+  MIN    1    1    0    2    0
+  NE     2    1    0    1    0
+  NO     1    1    2    3    0
+  NYG    0    0    0    0    4
+  NYJ    0    4    0    0    3
+  OAK    0    0    2    2    0
+  PHI    6    0    0    2    1
+  PIT    1    0    3    6    3
+  SD     0    0    1    1    0
+  SEA    1    1    3    1    3
+  SF     0    0    1    0    1
+  STL    1    0    1    0    0
+  TB     0    0    2    3    5
+  TEN    0    1    3    5    0
+  WAS    3    1    1    4    0
+
+, ,  = Success
+
+     
+      2013 2014 2015 2016 2017
+  ARI    1    2    0    1    1
+  ATL    1    1    1    2    0
+  BAL    3    1    1    3    0
+  BUF    2    2    2    4    0
+  CAR    0    1    0    3    0
+  CHI    5    5    2    0    1
+  CIN    0    1    1    0    0
+  CLE    1    0    2    2    1
+  DAL    1    0    1    0    1
+  DEN    0    2    0    0    2
+  DET    2    1    0    0    2
+  GB     0    1    4    2    1
+  HOU    1    0    2    0    2
+  IND    4    0    1    2    1
+  JAC    0    1    1    0    0
+  JAX    0    0    0    2    3
+  KC     0    0    1    1    0
+  LA     0    0    0    0    0
+  LAC    0    0    0    0    0
+  MIA    0    1    1    1    1
+  MIN    0    4    1    1    2
+  NE     2    0    0    1    2
+  NO     0    0    1    2    1
+  NYG    1    0    1    0    1
+  NYJ    0    0    0    1    1
+  OAK    0    0    1    5    2
+  PHI    3    0    0    4    3
+  PIT    1    4    8    3    2
+  SD     0    0    2    0    0
+  SEA    0    0    1    1    2
+  SF     0    0    1    2    0
+  STL    3    1    1    0    0
+  TB     0    0    1    4    1
+  TEN    0    0    3    0    0
+  WAS    2    0    2    0    0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>contingency2pt_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(contingency_2pt_by_team_year)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(contingency2pt_df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Team"</span>, <span class="st">"Year"</span>, <span class="st">"TwoPointConv"</span>, <span class="st">"Count"</span>)</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Plotting</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>combined2pt_data <span class="ot">&lt;-</span> contingency2pt_df <span class="sc">%&gt;%</span></span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Team, TwoPointConv) <span class="sc">%&gt;%</span></span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Count =</span> <span class="fu">sum</span>(Count)) <span class="sc">%&gt;%</span></span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'Team'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(combined2pt_data, <span class="fu">aes</span>(<span class="at">x =</span> Team, <span class="at">y =</span> Count, <span class="at">fill =</span> <span class="fu">factor</span>(TwoPointConv))) <span class="sc">+</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Two-Point Conversion Success by Team (2013-2017)"</span>,</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Team"</span>,</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Count of Two-Point Conversions"</span>,</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">fill =</span> <span class="st">"Two-Point Conversion"</span>) <span class="sc">+</span></span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Failure"</span> <span class="ot">=</span> <span class="st">"red"</span>, <span class="st">"Success"</span> <span class="ot">=</span> <span class="st">"green"</span>),</span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>                    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Failure"</span> <span class="ot">=</span> <span class="st">"Failure"</span>, <span class="st">"Success"</span> <span class="ot">=</span> <span class="st">"Success"</span>)) <span class="sc">+</span></span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> TwoPointConv)  <span class="co"># To separate failures and successes in the plot</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="data_analysis_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co">#obviously this isn't the best graph because there are so many teams, but thinking ahead to the app, I am thinking people could filter the graph on their team(s) of choice.</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a><span class="co">#filter on selected team </span></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>selected_team <span class="ot">=</span> <span class="st">"PIT"</span></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">#filter the two-point conversion plays for the selected team</span></span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>two_point_plays_team <span class="ot">&lt;-</span> two_point_plays <span class="sc">%&gt;%</span></span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(posteam <span class="sc">==</span> selected_team)</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>contingency_2pt_by_year <span class="ot">&lt;-</span> <span class="fu">table</span>(two_point_plays_team<span class="sc">$</span>Season, </span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>                                     two_point_plays_team<span class="sc">$</span>TwoPointConv)</span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Convert the contingency table to a data frame</span></span>
+<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a>selected_team_2pt_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(contingency_2pt_by_year)</span>
+<span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(selected_team_2pt_df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Year"</span>, <span class="st">"TwoPointConv"</span>, <span class="st">"Count"</span>)</span>
+<span id="cb48-15"><a href="#cb48-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-16"><a href="#cb48-16" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Plotting</span></span>
+<span id="cb48-17"><a href="#cb48-17" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(selected_team_2pt_df, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">factor</span>(Year), <span class="at">y =</span> Count, <span class="at">fill =</span> <span class="fu">factor</span>(TwoPointConv))) <span class="sc">+</span></span>
+<span id="cb48-18"><a href="#cb48-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb48-19"><a href="#cb48-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Two-Point Conversion Success for"</span>, selected_team, <span class="st">"(2013-2017)"</span>),</span>
+<span id="cb48-20"><a href="#cb48-20" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Year"</span>,</span>
+<span id="cb48-21"><a href="#cb48-21" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Count of Two-Point Conversions"</span>,</span>
+<span id="cb48-22"><a href="#cb48-22" aria-hidden="true" tabindex="-1"></a>       <span class="at">fill =</span> <span class="st">"Two-Point Conversion"</span>) <span class="sc">+</span></span>
+<span id="cb48-23"><a href="#cb48-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Failure"</span> <span class="ot">=</span> <span class="st">"red"</span>, <span class="st">"Success"</span> <span class="ot">=</span> <span class="st">"green"</span>),</span>
+<span id="cb48-24"><a href="#cb48-24" aria-hidden="true" tabindex="-1"></a>                    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Failure"</span> <span class="ot">=</span> <span class="st">"Failure"</span>, <span class="st">"Success"</span> <span class="ot">=</span> <span class="st">"Success"</span>)) <span class="sc">+</span></span>
+<span id="cb48-25"><a href="#cb48-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="data_analysis_files/figure-html/unnamed-chunk-3-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Who would've thought, highest failure rate the year Matt Canada takes over</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to calculate conversion rates for each team by year</span></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>calculate_twopt_conv <span class="ot">&lt;-</span> <span class="cf">function</span>(data, selected_teams) {</span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>  data <span class="sc">%&gt;%</span> </span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">TwoPointConv =</span> <span class="fu">ifelse</span>(TwoPointConv <span class="sc">==</span> <span class="st">"Success"</span>, <span class="dv">1</span>, <span class="dv">0</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(posteam <span class="sc">%in%</span> selected_teams <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(TwoPointConv)) <span class="sc">%&gt;%</span> </span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(Season,posteam) <span class="sc">%&gt;%</span> </span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">TotalAttempts =</span> <span class="fu">n</span>(),</span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a>              <span class="at">Successful =</span> <span class="fu">sum</span>(TwoPointConv, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a>              <span class="at">ConversionRate =</span> Successful<span class="sc">/</span>TotalAttempts,</span>
+<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a>              <span class="at">Type =</span> <span class="st">"Two-Point Conversion"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">Team=</span>posteam) <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>posteam)</span>
+<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-16"><a href="#cb49-16" aria-hidden="true" tabindex="-1"></a><span class="co">#testing function </span></span>
+<span id="cb49-17"><a href="#cb49-17" aria-hidden="true" tabindex="-1"></a><span class="fu">calculate_twopt_conv</span>(NFL_data,<span class="at">selected_teams =</span> <span class="fu">c</span>(<span class="st">"PIT"</span>,<span class="st">"CLE"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'Season'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 6
+# Groups:   Season [5]
+   Season TotalAttempts Successful ConversionRate Type                 Team 
+    &lt;dbl&gt;         &lt;int&gt;      &lt;dbl&gt;          &lt;dbl&gt; &lt;chr&gt;                &lt;chr&gt;
+ 1   2013             2          1          0.5   Two-Point Conversion CLE  
+ 2   2013             2          1          0.5   Two-Point Conversion PIT  
+ 3   2014             1          0          0     Two-Point Conversion CLE  
+ 4   2014             4          4          1     Two-Point Conversion PIT  
+ 5   2015             3          2          0.667 Two-Point Conversion CLE  
+ 6   2015            11          8          0.727 Two-Point Conversion PIT  
+ 7   2016             4          2          0.5   Two-Point Conversion CLE  
+ 8   2016             9          3          0.333 Two-Point Conversion PIT  
+ 9   2017             1          1          1     Two-Point Conversion CLE  
+10   2017             5          2          0.4   Two-Point Conversion PIT  </code></pre>
+</div>
+</div>
+</section>
+<section id="now-lets-look-at-the-4th-and-short-conversion-rates-by-year" class="level3">
+<h3 class="anchored" data-anchor-id="now-lets-look-at-the-4th-and-short-conversion-rates-by-year">5. Now lets look at the 4th and Short conversion rates by year:</h3>
+<p>First we will view bar plots of the count data of success and failures, then look at conversion rates</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter the dataset for fourth down plays</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>fourth_down_plays <span class="ot">&lt;-</span> NFL_data <span class="sc">%&gt;%</span></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(down <span class="sc">==</span> <span class="dv">4</span> <span class="sc">&amp;</span> yrdline100 <span class="sc">&lt;=</span> <span class="dv">2</span>) </span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a contingency table based on team, year, and touchdown success</span></span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>contingency_4th_by_team_year <span class="ot">&lt;-</span> <span class="fu">table</span>(fourth_down_plays<span class="sc">$</span>posteam, </span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>                                         fourth_down_plays<span class="sc">$</span>Season, </span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>                                         fourth_down_plays<span class="sc">$</span>Touchdown)</span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a><span class="co"># View the contingency table</span></span>
+<span id="cb52-11"><a href="#cb52-11" aria-hidden="true" tabindex="-1"></a>contingency_4th_by_team_year</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>, ,  = 0
+
+     
+      2013 2014 2015 2016 2017
+  ARI    0    0    1    0    3
+  ATL    5    2    3    1    4
+  BAL    1    3    3    1    1
+  BUF    4    0    3    3    4
+  CAR    1    0    3    1    3
+  CHI    3    2    2    0    2
+  CIN    1    1    1    1    0
+  CLE    2    0    1    1    1
+  DAL    2    0    2    0    1
+  DEN    2    4    3    2    2
+  DET    2    2    1    0    3
+  GB     3    4    3    3    0
+  HOU    3    1    2    2    1
+  IND    0    2    0    2    1
+  JAC    1    0    3    0    0
+  JAX    0    0    0    0    1
+  KC     3    2    0    1    1
+  LA     0    0    0    2    1
+  LAC    0    0    0    0    2
+  MIA    2    3    3    0    0
+  MIN    0    1    1    2    2
+  NE     4    5    1    3    0
+  NO     4    3    1    3    2
+  NYG    1    3    2    1    2
+  NYJ    2    0    1    1    1
+  OAK    3    0    0    4    1
+  PHI    2    2    0    5    1
+  PIT    0    1    3    0    2
+  SD     3    1    0    1    0
+  SEA    3    4    0    1    1
+  SF     2    2    1    0    1
+  STL    2    1    1    0    0
+  TB     0    0    0    0    1
+  TEN    3    2    1    1    1
+  WAS    3    1    2    4    1
+
+, ,  = 1
+
+     
+      2013 2014 2015 2016 2017
+  ARI    1    0    0    0    0
+  ATL    0    2    0    1    0
+  BAL    1    0    1    1    0
+  BUF    1    0    1    1    1
+  CAR    3    0    0    1    0
+  CHI    1    0    0    1    0
+  CIN    3    1    1    1    1
+  CLE    2    0    0    0    0
+  DAL    0    2    0    0    0
+  DEN    2    0    1    0    0
+  DET    1    1    0    3    0
+  GB     0    1    0    0    0
+  HOU    0    1    0    1    0
+  IND    1    1    1    2    0
+  JAC    1    0    1    0    0
+  JAX    0    0    0    0    2
+  KC     0    0    1    0    0
+  LA     0    0    0    0    1
+  LAC    0    0    0    0    1
+  MIA    0    0    0    0    0
+  MIN    0    1    1    0    0
+  NE     0    0    1    1    1
+  NO     0    1    1    3    1
+  NYG    0    1    1    0    0
+  NYJ    1    0    0    0    1
+  OAK    1    1    0    1    0
+  PHI    1    0    1    1    1
+  PIT    1    0    0    0    1
+  SD     0    0    1    0    0
+  SEA    1    0    0    0    1
+  SF     0    0    0    1    3
+  STL    0    0    0    0    0
+  TB     0    0    0    0    1
+  TEN    1    0    2    0    0
+  WAS    0    0    1    0    0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>contingency4th_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(contingency_4th_by_team_year)</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(contingency4th_df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Team"</span>, <span class="st">"Year"</span>, <span class="st">"Touchdown"</span>, <span class="st">"Count"</span>)</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Plotting</span></span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>combined4th_data <span class="ot">&lt;-</span> contingency4th_df <span class="sc">%&gt;%</span></span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Team, Touchdown) <span class="sc">%&gt;%</span></span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">Count =</span> <span class="fu">sum</span>(Count)) <span class="sc">%&gt;%</span></span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'Team'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(combined4th_data, <span class="fu">aes</span>(<span class="at">x =</span> Team, <span class="at">y =</span> Count, <span class="at">fill =</span> <span class="fu">factor</span>(Touchdown))) <span class="sc">+</span></span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Fourth Down Touchdown Success by Team (2013-2017)"</span>,</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Team"</span>,</span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Count of Touchdowns"</span>,</span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">fill =</span> <span class="st">"Touchdown"</span>) <span class="sc">+</span></span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"0"</span> <span class="ot">=</span> <span class="st">"red"</span>, <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"green"</span>),</span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a>                    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"0"</span> <span class="ot">=</span> <span class="st">"Failure"</span>, <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"Success"</span>)) <span class="sc">+</span></span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> Touchdown)  <span class="co"># To separate failures and successes in the plot</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="data_analysis_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Again, let's do this just with one team.. </span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Filter the dataset for fourth down plays for the selected team</span></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>fourth_down_plays_team <span class="ot">&lt;-</span> fourth_down_plays <span class="sc">%&gt;%</span></span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(posteam <span class="sc">==</span> selected_team)</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Create a contingency table based on touchdown success for the team</span></span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>contingency4th_table_by_team <span class="ot">&lt;-</span> <span class="fu">table</span>(fourth_down_plays_team<span class="sc">$</span>Season, fourth_down_plays_team<span class="sc">$</span>Touchdown)</span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>contingency4th_table_by_team</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      
+       0 1
+  2013 0 1
+  2014 1 0
+  2015 3 0
+  2017 2 1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Convert contingency table to a data frame for easier manipulation</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>selected_team_4th_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(contingency4th_table_by_team)</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(selected_team_4th_df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Season"</span>, <span class="st">"Touchdown"</span>, <span class="st">"Count"</span>)</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>  <span class="co">#plotting</span></span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(selected_team_4th_df, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">factor</span>(Season), <span class="at">y =</span> Count, <span class="at">fill =</span> <span class="fu">factor</span>(Touchdown))) <span class="sc">+</span></span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">"Fourth Down Touchdown Success for"</span>, selected_team, <span class="st">"(2013-2017)"</span>),</span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Season"</span>,</span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Count of Fourth Down Attempts"</span>,</span>
+<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">fill =</span> <span class="st">"Touchdown Outcome"</span>) <span class="sc">+</span></span>
+<span id="cb59-12"><a href="#cb59-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"0"</span> <span class="ot">=</span> <span class="st">"red"</span>, <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"green"</span>),</span>
+<span id="cb59-13"><a href="#cb59-13" aria-hidden="true" tabindex="-1"></a>                    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"0"</span> <span class="ot">=</span> <span class="st">"Failure"</span>, <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"Success"</span>)) <span class="sc">+</span></span>
+<span id="cb59-14"><a href="#cb59-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="data_analysis_files/figure-html/unnamed-chunk-4-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="do">##### Function for calculating 4th and short conversion rates for each team by year</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>calculate_4thdown_conv <span class="ot">&lt;-</span> <span class="cf">function</span>(data, selected_teams) {</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>  data <span class="sc">%&gt;%</span></span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(posteam <span class="sc">%in%</span> selected_teams <span class="sc">&amp;</span> down <span class="sc">==</span> <span class="dv">4</span> <span class="sc">&amp;</span> yrdline100 <span class="sc">&lt;=</span><span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(Season, posteam) <span class="sc">%&gt;%</span></span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">TotalAttempts =</span> <span class="fu">n</span>(),</span>
+<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a>              <span class="at">Successful =</span> <span class="fu">sum</span>(Touchdown <span class="sc">==</span> <span class="dv">1</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a>              <span class="at">ConversionRate =</span> Successful <span class="sc">/</span> TotalAttempts,</span>
+<span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a>              <span class="at">Type =</span> <span class="st">"Fourth Down Conversion"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb60-10"><a href="#cb60-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">Team =</span> posteam) <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>posteam)</span>
+<span id="cb60-11"><a href="#cb60-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb60-12"><a href="#cb60-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-13"><a href="#cb60-13" aria-hidden="true" tabindex="-1"></a><span class="co">#testing function </span></span>
+<span id="cb60-14"><a href="#cb60-14" aria-hidden="true" tabindex="-1"></a><span class="fu">calculate_4thdown_conv</span>(NFL_data, <span class="fu">c</span>(<span class="st">"PIT"</span>,<span class="st">"CLE"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'Season'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 8 × 6
+# Groups:   Season [5]
+  Season TotalAttempts Successful ConversionRate Type                   Team 
+   &lt;dbl&gt;         &lt;int&gt;      &lt;int&gt;          &lt;dbl&gt; &lt;chr&gt;                  &lt;chr&gt;
+1   2013             4          2          0.5   Fourth Down Conversion CLE  
+2   2013             1          1          1     Fourth Down Conversion PIT  
+3   2014             1          0          0     Fourth Down Conversion PIT  
+4   2015             1          0          0     Fourth Down Conversion CLE  
+5   2015             3          0          0     Fourth Down Conversion PIT  
+6   2016             1          0          0     Fourth Down Conversion CLE  
+7   2017             1          0          0     Fourth Down Conversion CLE  
+8   2017             3          1          0.333 Fourth Down Conversion PIT  </code></pre>
+</div>
+</div>
+</section>
+<section id="line-plots" class="level3">
+<h3 class="anchored" data-anchor-id="line-plots">6. Line plots</h3>
+<p>These allow visual team comparisons of 2 point conversion rates and fourth and short conversion rates through the 2013-2017 seasons.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="co">#fourth down conversion rates needed for plot </span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="fu">calculate_4thdown_conv</span>(NFL_data, <span class="fu">c</span>(<span class="st">"PIT"</span>,<span class="st">"BAL"</span>,<span class="st">"CLE"</span>,<span class="st">"CIN"</span>)) <span class="ot">-&gt;</span> AFCnorth</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'Season'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a> <span class="co">#Create the line plot</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>fourth_line_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(AFCnorth, <span class="fu">aes</span>(<span class="at">x =</span> Season, <span class="at">y =</span> ConversionRate, <span class="at">color =</span> Team, <span class="at">group =</span> Team)) <span class="sc">+</span></span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span>  <span class="co"># Line for each team</span></span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span>  <span class="co"># Points at each season</span></span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Fourth Down Conversion Rates by Team"</span>,</span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Season"</span>,</span>
+<span id="cb65-7"><a href="#cb65-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Conversion Rate"</span>,</span>
+<span id="cb65-8"><a href="#cb65-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">"Team"</span>) <span class="sc">+</span></span>
+<span id="cb65-9"><a href="#cb65-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+ℹ Please use `linewidth` instead.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the plot</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(fourth_line_plot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="data_analysis_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="do">########## 2 point conversion rates </span></span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="fu">calculate_twopt_conv</span>(NFL_data, <span class="fu">c</span>(<span class="st">"KC"</span>,<span class="st">"JAX"</span>)) <span class="ot">-&gt;</span>KCvJAX</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'Season'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>  <span class="co">#Create the line plot</span></span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>line_plot_2pt <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(KCvJAX, <span class="fu">aes</span>(<span class="at">x =</span> Season, <span class="at">y =</span> ConversionRate, <span class="at">color =</span> Team, <span class="at">group =</span> Team)) <span class="sc">+</span></span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span>  <span class="co"># Line for each team</span></span>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span>  <span class="co"># Points at each season</span></span>
+<span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Two-Point Conversion Rates by Team"</span>,</span>
+<span id="cb70-6"><a href="#cb70-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Season"</span>,</span>
+<span id="cb70-7"><a href="#cb70-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Conversion Rate"</span>,</span>
+<span id="cb70-8"><a href="#cb70-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">"Team"</span>) <span class="sc">+</span></span>
+<span id="cb70-9"><a href="#cb70-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb70-10"><a href="#cb70-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-11"><a href="#cb70-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the plot</span></span>
+<span id="cb70-12"><a href="#cb70-12" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(line_plot_2pt)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="data_analysis_files/figure-html/unnamed-chunk-5-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="for-a-single-team-visualize-both-2-point-conversion-and-fourth-and-inches-conversion-rates" class="level3">
+<h3 class="anchored" data-anchor-id="for-a-single-team-visualize-both-2-point-conversion-and-fourth-and-inches-conversion-rates">7. For a single team, visualize both 2 point conversion and fourth and inches conversion rates</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Going to use the AFC North Teams again </span></span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Get conversion rates for two-point and fourth down for multiple teams</span></span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>AFCN_two_point_data <span class="ot">&lt;-</span> <span class="fu">calculate_twopt_conv</span>(NFL_data, <span class="fu">c</span>(<span class="st">"PIT"</span>,<span class="st">"BAL"</span>,<span class="st">"CLE"</span>,<span class="st">"CIN"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'Season'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>AFCN_fourth_down_data <span class="ot">&lt;-</span> <span class="fu">calculate_4thdown_conv</span>(NFL_data, <span class="fu">c</span>(<span class="st">"PIT"</span>,<span class="st">"BAL"</span>,<span class="st">"CLE"</span>,<span class="st">"CIN"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'Season'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Combining datasets </span></span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>AFCN_all <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(AFCN_fourth_down_data,AFCN_two_point_data)</span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Plotting</span></span>
+<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(AFCN_all, <span class="fu">aes</span>(<span class="at">x=</span>Season, <span class="at">y=</span>ConversionRate, <span class="at">color=</span> Team, <span class="at">linetype =</span> Type, <span class="at">group =</span> <span class="fu">interaction</span>(Team, Type))) <span class="sc">+</span></span>
+<span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">se=</span><span class="cn">FALSE</span>, <span class="at">size =</span> <span class="fl">1.2</span>) <span class="sc">+</span> <span class="co">#smoothed lines</span></span>
+<span id="cb75-7"><a href="#cb75-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> AFCN_all <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(Team,Type) <span class="sc">%&gt;%</span> <span class="fu">slice_max</span>(Season),</span>
+<span id="cb75-8"><a href="#cb75-8" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">label=</span>Team), <span class="at">hjust=</span><span class="fl">1.2</span>,<span class="at">size =</span> <span class="dv">4</span>) <span class="sc">+</span> <span class="co">#add team labels at the end of each line </span></span>
+<span id="cb75-9"><a href="#cb75-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span> <span class="st">"Two-point and Fourth Down Conversion Rates"</span>,</span>
+<span id="cb75-10"><a href="#cb75-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Season"</span>,</span>
+<span id="cb75-11"><a href="#cb75-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Conversion Rate"</span>,</span>
+<span id="cb75-12"><a href="#cb75-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">"Team"</span>,</span>
+<span id="cb75-13"><a href="#cb75-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">linetype =</span> <span class="st">"Conversion Type"</span>) <span class="sc">+</span> </span>
+<span id="cb75-14"><a href="#cb75-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">2013</span><span class="sc">:</span><span class="dv">2017</span>) <span class="sc">+</span> <span class="co">#setting axis for the 2013-2017 seasons </span></span>
+<span id="cb75-15"><a href="#cb75-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using method = 'loess' and formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: span too small.  fewer data values than degrees of freedom.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: pseudoinverse used at 2013</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: neighborhood radius 2.02</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: reciprocal condition number 0</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: There are other near singularities as well. 4.0804</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: span too small.  fewer data values than degrees of freedom.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: pseudoinverse used at 2013</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: neighborhood radius 2.02</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: reciprocal condition number 0</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: There are other near singularities as well. 4.0804</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: span too small.  fewer data values than degrees of freedom.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: pseudoinverse used at 2013</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: neighborhood radius 3.02</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: reciprocal condition number 0</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: There are other near singularities as well. 4.0804</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: span too small.  fewer data values than degrees of freedom.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: pseudoinverse used at 2013</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: neighborhood radius 2.02</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: reciprocal condition number 0</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: There are other near singularities as well. 9.1204</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: span too small.  fewer data values than degrees of freedom.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: pseudoinverse used at 2013</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: neighborhood radius 2.02</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: reciprocal condition number 0</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: There are other near singularities as well. 4.0804</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: span too small.  fewer data values than degrees of freedom.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: pseudoinverse used at 2013</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: neighborhood radius 1.01</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: reciprocal condition number 0</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: There are other near singularities as well. 1.0201</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: span too small.  fewer data values than degrees of freedom.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: pseudoinverse used at 2013</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: neighborhood radius 2.02</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: reciprocal condition number 0</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: There are other near singularities as well. 4.0804</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: span too small.  fewer data values than degrees of freedom.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: pseudoinverse used at 2013</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: neighborhood radius 2.02</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: reciprocal condition number 0</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in simpleLoess(y, x, w, span, degree = degree, parametric = parametric,
+: There are other near singularities as well. 4.0804</code></pre>
+</div>
+<div class="cell-output-display">
+<p><img src="data_analysis_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<section id="numerical-summaries-for-quantitative-variables-at-a-given-teams" class="level4">
+<h4 class="anchored" data-anchor-id="numerical-summaries-for-quantitative-variables-at-a-given-teams">Numerical Summaries for Quantitative Variables at a Given Team(s)</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Function to summarize numeric variables for specific team(s) </span></span>
+<span id="cb117-2"><a href="#cb117-2" aria-hidden="true" tabindex="-1"></a>calculate_team_summary<span class="ot">&lt;-</span> <span class="cf">function</span>(data, selected_teams, quantitative_vars) {</span>
+<span id="cb117-3"><a href="#cb117-3" aria-hidden="true" tabindex="-1"></a>  data <span class="sc">%&gt;%</span> </span>
+<span id="cb117-4"><a href="#cb117-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(posteam <span class="sc">%in%</span> selected_teams) <span class="sc">%&gt;%</span> <span class="co">#filter for selected team(s)</span></span>
+<span id="cb117-5"><a href="#cb117-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(posteam) <span class="sc">%&gt;%</span> <span class="co">#group by team</span></span>
+<span id="cb117-6"><a href="#cb117-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="fu">across</span>(</span>
+<span id="cb117-7"><a href="#cb117-7" aria-hidden="true" tabindex="-1"></a>      <span class="fu">all_of</span>(quantitative_vars), <span class="co">#i am thinking in app i will give options for user</span></span>
+<span id="cb117-8"><a href="#cb117-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">list</span>(<span class="at">mean =</span> <span class="sc">~</span><span class="fu">mean</span>(.x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">sd =</span> <span class="sc">~</span><span class="fu">sd</span>(.x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">median =</span> <span class="sc">~</span><span class="fu">median</span>(.x, <span class="at">na.rm=</span> <span class="cn">TRUE</span>))</span>
+<span id="cb117-9"><a href="#cb117-9" aria-hidden="true" tabindex="-1"></a>    )) <span class="sc">%&gt;%</span> </span>
+<span id="cb117-10"><a href="#cb117-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">ungroup</span>()</span>
+<span id="cb117-11"><a href="#cb117-11" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb117-12"><a href="#cb117-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb117-13"><a href="#cb117-13" aria-hidden="true" tabindex="-1"></a><span class="co">#Example usage </span></span>
+<span id="cb117-14"><a href="#cb117-14" aria-hidden="true" tabindex="-1"></a><span class="fu">calculate_team_summary</span>(<span class="at">data =</span> NFL_data, <span class="at">selected_teams =</span> <span class="fu">c</span>(<span class="st">"PIT"</span>,<span class="st">"CLE"</span>), <span class="at">quantitative_vars =</span> <span class="fu">c</span>(<span class="st">"yrdline100"</span>, <span class="st">"FieldGoalDistance"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 7
+  posteam yrdline100_mean yrdline100_sd yrdline100_median FieldGoalDistance_mean
+  &lt;chr&gt;             &lt;dbl&gt;         &lt;dbl&gt;             &lt;dbl&gt;                  &lt;dbl&gt;
+1 CLE                52.0          25.0                55                   37.3
+2 PIT                48.7          25.5                50                   36.6
+# ℹ 2 more variables: FieldGoalDistance_sd &lt;dbl&gt;,
+#   FieldGoalDistance_median &lt;dbl&gt;</code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
