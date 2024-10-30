@@ -39,7 +39,7 @@ calculate_twopt_conv <- function(data, selected_teams) {
 
 
 #Load data 
-read_csv("NFL Play by Play 2009-2017 (v4).csv") 
+read_csv("NFL_Play_by_Play_2009-2017(v4).csv") 
 
 #Define UI 
 
