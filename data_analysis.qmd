@@ -30,7 +30,7 @@ pacman::p_load(tidycensus,
 ```{r data_import}
 NFL_data<- read_csv("NFL_Play_by_Play_2009-2017(v4).csv") 
 head(NFL_data)
-#Imported as a tibble. Has 102 different variables 
+#Imported as a tibble. Has 102 different variables sdfgafgfgs
 str(NFL_data)
 #psych::describe(NFL_data)
 #I am going to filter to just a 5 year span, 2012-2017, just because the dataset is so huge and taking a long time to load for a lot of things. 
